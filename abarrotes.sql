@@ -19,8 +19,8 @@ CREATE TABLE roles (
 );
 
 -- Rol del empleado
-DROP TABLE IF EXISTS empleado_rol;
-CREATE TABLE empleado_rol (
+DROP TABLE IF EXISTS empleado_roles;
+CREATE TABLE empleado_roles (
 	id_empleado INT NOT NULL,
 	id_rol INT NOT NULL,
 	FOREIGN KEY (id_empleado) REFERENCES empleados(id_empleado),
@@ -36,8 +36,8 @@ CREATE TABLE cajas (
 );
 
 -- Historial de accesos
-DROP TABLE IF EXISTS historial_acceso;
-CREATE TABLE historial_acceso (
+DROP TABLE IF EXISTS historial_accesos;
+CREATE TABLE historial_accesos (
   id_acceso INT PRIMARY KEY AUTO_INCREMENT,
   id_empleado INT NOT NULL,
   id_caja INT NOT NULL,
@@ -82,8 +82,8 @@ CREATE TABLE almacenes (
 );
 
 -- Inventario por almacén
-DROP TABLE IF EXISTS inventario;
-CREATE TABLE inventario (
+DROP TABLE IF EXISTS inventarios;
+CREATE TABLE inventarios (
 	id_producto INT NOT NULL,
 	id_almacen INT NOT NULL,
 	stock INT NOT NULL DEFAULT 0,
@@ -93,8 +93,8 @@ CREATE TABLE inventario (
 );
 
 -- Movimientos de inventario (entrada/salida)
-DROP TABLE IF EXISTS movimientos_inventario;
-CREATE TABLE movimientos_inventario (
+DROP TABLE IF EXISTS movimientos_inventarios;
+CREATE TABLE movimientos_inventarios (
 	id_movimiento INT PRIMARY KEY AUTO_INCREMENT,
 	id_producto INT,
 	id_almacen INT,
