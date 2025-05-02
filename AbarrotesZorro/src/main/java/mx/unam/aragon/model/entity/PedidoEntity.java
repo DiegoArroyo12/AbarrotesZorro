@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mx.unam.aragon.model.entity.enums.EstadoPedido;
 
 import java.time.LocalDate;
 
@@ -21,7 +22,7 @@ public class PedidoEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_provedor", nullable = false)
-    private ProvedorEntity provedor;
+    private ProveedorEntity provedor;
 
     @ManyToOne
     @JoinColumn(name = "id_empleado", nullable = false)

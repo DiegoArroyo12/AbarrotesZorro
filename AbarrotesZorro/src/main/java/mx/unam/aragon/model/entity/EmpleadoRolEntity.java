@@ -1,27 +1,22 @@
 package mx.unam.aragon.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import mx.unam.aragon.model.entity.seriales.IdEmpleadoRol;
 
-@Entity(name = "empleado_roles")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Entity
+@Table(name = "empleado_roles")
 public class EmpleadoRolEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_empleado_rol")
-    private Long id;
+    @EmbeddedId
+    private IdEmpleadoRol id;
 
     @ManyToOne
+    @MapsId("id_empleado")
     @JoinColumn(name = "id_empleado")
     private EmpleadoEntity empleado;
 
     @ManyToOne
+    @MapsId("id_rol")
     @JoinColumn(name = "id_rol")
     private RolEntity rol;
 }
+

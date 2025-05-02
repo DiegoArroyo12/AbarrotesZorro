@@ -6,15 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "provedores")
+@Entity(name = "proveedores")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProvedorEntity {
+public class ProveedorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_provedor")
+    @Column(name = "id_proveedor")
     private Long id;
 
     @Column(name = "nombre")

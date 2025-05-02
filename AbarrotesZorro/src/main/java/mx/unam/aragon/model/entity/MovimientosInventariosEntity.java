@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mx.unam.aragon.model.entity.enums.Tipo;
 
 import java.time.LocalDate;
 

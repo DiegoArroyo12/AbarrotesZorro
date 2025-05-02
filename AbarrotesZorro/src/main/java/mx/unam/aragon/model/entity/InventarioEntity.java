@@ -1,28 +1,25 @@
 package mx.unam.aragon.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import mx.unam.aragon.model.entity.seriales.IdInventario;
 
-@Entity(name = "inventarios")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Entity
+@Table(name = "inventarios")
 public class InventarioEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_inventario")
-    private Long id;
+    @EmbeddedId
+    private IdInventario id;
 
     @ManyToOne
+    @MapsId("id_producto")
     @JoinColumn(name = "id_producto")
     private ProductoEntity producto;
 
     @ManyToOne
+    @MapsId("id_almacen")
     @JoinColumn(name = "id_almacen")
     private AlmacenEntity almacen;
+
+    @Column(name = "stock")
+    private int stock;
 
 }
