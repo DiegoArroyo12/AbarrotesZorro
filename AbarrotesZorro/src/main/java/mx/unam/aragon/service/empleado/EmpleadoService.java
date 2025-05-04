@@ -7,8 +7,8 @@ import mx.unam.aragon.model.entity.EmpleadoRolEntity;
 import java.util.List;
 
 public interface EmpleadoService {
-    EmpleadoRolEntity save(EmpleadoRolEntity empleado_rol);
-    List<EmpleadoRolEntity> findAll();
+    EmpleadoEntity save(EmpleadoEntity empleado_rol);
+    List<EmpleadoEntity> findAll();
     void deleteById(Long id);
-    EmpleadoRolEntity findById(Long id);
+    EmpleadoEntity findById(Long id);
 }

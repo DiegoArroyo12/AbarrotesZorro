@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link th:href="@{/css/login.css}" rel="stylesheet">
+    <title>Login - Abarrotes</title>
+</head>
+<body>
+<div class="contenedor">
+    <form class="login-form" th:action="@{/login}" method="post">
+        <!-- <img src="zorroLogo.png" alt="logo"> -->
+        <h1>Iniciar Sesión</h1>
+
+        <div class="input-group">
+            <label for="username">Usuario</label>
+            <input type="text" name="username" id="username" required />
+        </div>
+
+        <div class="input-group">
+            <label for="password">Contraseña</label>
+            <input type="password" name="password" id="password" required />
+        </div>
+
+        <button type="submit">Ingresar</button>
+    </form>
+    <div class="notification error" th:if="${param.error}">
+        Usuario o Contraseña Incorrectos
+    </div>
+    <div class="notification logout" th:if="${param.logout}">
+        Sesión Cerrada
+    </div>
+</div>
+</body>
+</html>

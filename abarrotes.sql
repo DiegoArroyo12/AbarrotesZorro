@@ -11,12 +11,16 @@ CREATE TABLE empleados (
 	password_hash VARCHAR(100) NOT NULL
 );
 
+INSERT INTO empleados VALUES (1, 'Diego', 'darroyo', '$2a$10$hDlFuS/3qfg9uFVaZ3S0Q.X5Uqaxwts6DZBd7wfjHTeEV/jYyG2Z2'), (2, 'Salma', 'snavarro', '$2a$10$hDlFuS/3qfg9uFVaZ3S0Q.X5Uqaxwts6DZBd7wfjHTeEV/jYyG2Z2');
+
 -- Roles
 DROP TABLE IF EXISTS roles;
 CREATE TABLE roles (
 	id_rol INT PRIMARY KEY AUTO_INCREMENT,
 	nombre VARCHAR(25) NOT NULL UNIQUE
 );
+
+INSERT INTO roles VALUES (1, 'Gerente'), (2, 'Cajero'), (3, 'Almacenista');
 
 -- Rol del empleado
 DROP TABLE IF EXISTS empleado_roles;
@@ -27,6 +31,8 @@ CREATE TABLE empleado_roles (
 	FOREIGN KEY (id_rol) REFERENCES roles(id_rol),
 	PRIMARY KEY (id_empleado, id_rol)
 );
+
+INSERT INTO empleado_roles VALUES (1, 1), (2, 2);
 
 -- Cajas
 DROP TABLE IF EXISTS cajas;
