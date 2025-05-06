@@ -1,0 +1,121 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 10rem;
+    background-color: rgb(216, 42, 42);
+    padding: 1rem;
+    border-right: 1px solid black;
+}
+
+.sidebar button {
+    margin: 2rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    background-color: orange;
+    cursor: pointer;
+    width: 100%;
+}
+
+.side-footer {
+    position: absolute;
+    bottom: 0;
+}
+
+.side-footer button {
+    margin: 0;
+    margin-bottom: 1rem;
+    padding: .5rem;
+}
+
+.side-footer h3 {
+    margin-bottom: 5px;
+}
+
+.side-footer h4 {
+    margin-top: 0;
+    color: white;
+    text-align: center;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.productos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.producto {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    width: 10rem;
+    text-align: center;
+    background-color: #fff;
+}
+
+.producto h4 {
+    margin: .5rem 0;
+}
+
+.cantidad-control {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: .5rem;
+}
+
+.carrito {
+    width: 20rem;
+    background-color: #fafafa;
+    padding: 1rem;
+    border-left: 1px solid black;
+}
+
+.carrito h1 {
+    text-align: center;
+}
+
+.carrito ul {
+    list-style: none;
+    padding: 0;
+}
+
+.carrito li {
+    margin-bottom: .5rem;
+}
+
+.total {
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+button {
+    padding: .5rem 1rem;
+}
+
+.realizar-compra {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 1rem;
+    background-color: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
