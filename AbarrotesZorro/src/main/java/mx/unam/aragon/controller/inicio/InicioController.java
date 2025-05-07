@@ -22,6 +22,6 @@ public class InicioController {
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(username)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
         model.addAttribute("nombreEmpleado", empleado.getNombre());
-        return "inicio/inicio";
+        return "inicio";
     }
 }
