@@ -1,13 +1,120 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Abarrotes Zorro</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link th:href="@{/css/inicio.css}" rel="stylesheet">
+    <link rel="stylesheet" href="inicio.css">
+    <title>Inicio Abarrotes</title>
 </head>
 <body>
-<h1 th:inline="text">Bienvenido <span th:remove="tag" sec:authentication="name">thymeleaf</span>!</h1>
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="Sign Out"/>
-</form>
+<div class="sidebar">
+    <h1>Logo</h1>
+    <button>Ventas</button>
+    <button>Inventario</button>
+
+    <form class="side-footer" th:action="@{/logout}" method="post">
+        <h3>Empleado:</h3>
+        <h4 th:text="${nombreEmpleado}">Nombre del Empleado</h4>
+        <button>Cerrar Sesión</button>
+    </form>
+</div>
+
+<div class="main">
+    <div class="productos">
+        <!-- Plantilla para productos -->
+        <div class="producto template" style="display: none;">
+            <h4 class="nombre-producto">Nombre</h4>
+            <div class="precio-producto">$0</div>
+            <div class="cantidad-control">
+                <button class="menos">-</button>
+                <span class="cantidad">0</span>
+                <button class="mas">+</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="carrito">
+    <h1>Carrito</h1>
+    <ul>
+        <!-- Se insertan los productos con JS -->
+    </ul>
+    <div class="total">Total: $65</div>
+    <button class="realizar-compra">Realizar</button>
+</div>
+<script>
+    const productos = [];
+    const cantidades = [];
+
+    const contenedorProductos = document.querySelector(".productos");
+    const plantillaProducto = document.querySelector(".producto.template");
+    const carritoLista = document.querySelector(".carrito ul");
+    const totalDiv = document.querySelector(".carrito .total");
+
+    function actualizarCarrito() {
+        carritoLista.innerHTML = "";
+        let total = 0;
+
+        productos.forEach((producto, i) => {
+            if (cantidades[i] > 0) {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <span>${producto.nombre} x${cantidades[i]}</span>
+                    <span style="float: right;">$${cantidades[i] * producto.precio}</span>
+                `;
+                carritoLista.appendChild(li);
+                total += cantidades[i] * producto.precio;
+            }
+        });
+
+        totalDiv.textContent = `Total: $${total}`;
+    }
+
+    function crearProductos() {
+        productos.forEach((producto, i) => {
+            cantidades[i] = 0;
+
+            const clon = plantillaProducto.cloneNode(true);
+            clon.classList.remove("template");
+            clon.style.display = "block";
+
+            clon.querySelector(".nombre-producto").textContent = producto.nombre;
+            clon.querySelector(".precio-producto").textContent = `$${producto.precio}`;
+            const cantidadSpan = clon.querySelector(".cantidad");
+
+            clon.querySelector(".mas").addEventListener("click", () => {
+                cantidades[i]++;
+                cantidadSpan.textContent = cantidades[i];
+                actualizarCarrito();
+            });
+
+            clon.querySelector(".menos").addEventListener("click", () => {
+                if (cantidades[i] > 0) {
+                    cantidades[i]--;
+                    cantidadSpan.textContent = cantidades[i];
+                    actualizarCarrito();
+                }
+            });
+
+            contenedorProductos.appendChild(clon);
+        });
+    }
+
+    // Consumo de la API
+    fetch('/abarrotes/productos')
+        .then(res => res.json())
+        .then(data => {
+            data.forEach(p => {
+                productos.push({
+                    nombre: p.nombre,
+                    precio: p.precio
+                });
+            });
+            crearProductos();
+        })
+        .catch(error => console.error('Error al obtener productos: ', error));
+</script>
 </body>
 </html>
