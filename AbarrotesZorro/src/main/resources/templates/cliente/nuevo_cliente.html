@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Alta de Cliente</title>
+    <link th:href="@{/css/nuevo_cliente.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5 shadow-lg p-4 rounded">
+    <h1 class="text-center mb-4">Alta de Cliente</h1>
+    <form method="post" th:action="@{/cliente/guardar}" th:object="${cliente}">
+        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+            <strong>Errores encontrados:</strong>
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo electrónico:</label>
+            <input type="email" id="correo" name="correo"
+                   th:field="*{correo}"
+                   th:class="${#fields.hasErrors('correo')} ? 'form-control is-invalid' : 'form-control'"
+                   placeholder="ejemplo@correo.com">
+        </div>
+
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre:</label>
+            <input type="text" id="nombre" name="nombre"
+                   th:field="*{nombre}"
+                   th:class="${#fields.hasErrors('nombre')} ? 'form-control is-invalid' : 'form-control'"
+                   placeholder="Ej. Juan Pérez">
+        </div>
+
+        <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono"
+                   th:field="*{telefono}"
+                   th:class="${#fields.hasErrors('telefono')} ? 'form-control is-invalid' : 'form-control'"
+                   placeholder="Ej. 555-123-4567">
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">Guardar Cliente</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

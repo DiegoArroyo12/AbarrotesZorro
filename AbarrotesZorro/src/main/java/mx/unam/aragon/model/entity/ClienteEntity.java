@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ClienteEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "correo")
-    private Long id;
+    @Column(name = "correo", nullable = false)
+    private String correo;
 
     @Column(name = "nombre")
     private String nombre;
