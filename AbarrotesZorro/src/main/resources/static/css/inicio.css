@@ -6,6 +6,12 @@ body {
     height: 100vh;
 }
 
+h4 {
+    margin-top: 0;
+    color: white;
+    text-align: center;
+}
+
 .sidebar {
     display: flex;
     flex-direction: column;
@@ -16,8 +22,21 @@ body {
     border-right: 1px solid black;
 }
 
+/* Secciones */
+.sec {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.sec button {
+    width: 100%;
+    margin: 1rem 0;
+}
+
 .sidebar button {
-    margin: 2rem;
+    margin-bottom: 0;
     font-size: 1.5rem;
     font-weight: bold;
     background-color: orange;
@@ -25,6 +44,22 @@ body {
     width: 100%;
 }
 
+/* Cliente */
+.l_cli {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: .5rem;
+}
+
+.i_cli {
+    border-radius: .5rem;
+}
+
+.sec .button_cliente {
+    font-size: 1rem;
+}
+
+/* Footer */
 .side-footer {
     position: absolute;
     bottom: 0;
@@ -38,12 +73,6 @@ body {
 
 .side-footer h3 {
     margin-bottom: 5px;
-}
-
-.side-footer h4 {
-    margin-top: 0;
-    color: white;
-    text-align: center;
 }
 
 .main {

@@ -29,7 +29,8 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public ClienteEntity findById(String correo) {
-        return clienteRepository.findById(correo).orElse(null);
-    }
+    public ClienteEntity findByCorreo(String correo) { return clienteRepository.findById(correo).orElse(null); }
+
+    @Override
+    public ClienteEntity findByTelefono(String telefono) { return clienteRepository.findByTelefono(telefono).orElse(null); }
 }

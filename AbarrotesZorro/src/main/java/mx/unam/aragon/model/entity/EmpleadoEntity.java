@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Entity(name = "empleados")
 @Data
 @AllArgsConstructor
@@ -26,4 +28,11 @@ public class EmpleadoEntity {
     @Column(name = "password_hash")
     private String password_hash;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "empleado_roles",
+            joinColumns = @JoinColumn(name = "id_empleado"),
+            inverseJoinColumns = @JoinColumn(name = "id_rol")
+    )
+    private Set<RolEntity> roles;
 }

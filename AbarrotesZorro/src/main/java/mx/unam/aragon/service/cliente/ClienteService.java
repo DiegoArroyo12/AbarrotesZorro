@@ -8,5 +8,7 @@ public interface ClienteService {
     ClienteEntity save(ClienteEntity cliente);
     List<ClienteEntity> findAll();
     void deleteById(String correo);
-    ClienteEntity findById(String correo);
+
+    ClienteEntity findByCorreo(String correo);
+    ClienteEntity findByTelefono(String telefono);
 }

@@ -1,18 +1,38 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link th:href="@{/css/inicio.css}" rel="stylesheet">
+    <link rel="stylesheet" href="inicio.css">
     <title>Inicio Abarrotes</title>
 </head>
 <body>
 <div class="sidebar">
     <h1>Logo</h1>
-    <button>Ventas</button>
-    <button>Inventario</button>
-    <button type="button" onclick="window.location.href='/cliente/nuevo-cliente'">Nuevo Cliente</button>
+
+    <!-- Solo para Gerente -->
+    <div class="sec" sec:authorize="hasAuthority('Gerente')">
+        <button>Historial de Ventas</button>
+        <button>Inventario</button>
+    </div>
+
+    <!-- Para todos los usuarios autenticados -->
+    <div class="sec" sec:authorize="isAuthenticated()">
+        <h2>Cliente</h2>
+
+        <h4 id="nombreCliente" th:text="${nombreCliente}">Nombre del Cliente</h4>
+
+        <label class="l_cli" for="correo">Correo: </label>
+        <input class="i_cli" type="email" id="correo">
+
+        <label class="l_cli" for="telefono">Teléfono:</label>
+        <input class="i_cli" type="number" id="telefono" maxlength="10">
+
+        <button class="button_cliente" onclick="buscarCliente()">Buscar Cliente</button>
+        <button class="button_cliente" onclick="">Nuevo Cliente</button>
+    </div>
 
     <form class="side-footer" th:action="@{/logout}" method="post">
         <h3>Empleado:</h3>
@@ -25,7 +45,7 @@
     <div class="productos">
         <!-- Plantilla para productos -->
         <div class="producto template" style="display: none;">
-            <h4 class="nombre-producto">Nombre</h4>
+            <p class="nombre-producto">Nombre</p>
             <div class="precio-producto">$0</div>
             <div class="cantidad-control">
                 <button class="menos">-</button>
@@ -115,6 +135,27 @@
             crearProductos();
         })
         .catch(error => console.error('Error al obtener productos: ', error));
+
+
+    function buscarCliente() {
+        const correo = document.getElementById('correo').value;
+        const telefono = document.getElementById('telefono').value;
+
+        fetch(`/cliente/buscar?correo=${correo}&telefono=${telefono}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Cliente no encontrado');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('nombreCliente').textContent = data.nombre;
+            })
+            .catch(error => {
+                console.error(error);
+                alert('No se encontró el cliente.');
+            });
+    }
 </script>
 </body>
 </html>
