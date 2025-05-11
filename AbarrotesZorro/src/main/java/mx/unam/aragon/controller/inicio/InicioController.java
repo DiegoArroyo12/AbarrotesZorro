@@ -2,6 +2,7 @@ package mx.unam.aragon.controller.inicio;
 
 import mx.unam.aragon.model.entity.ClienteEntity;
 import mx.unam.aragon.model.entity.EmpleadoEntity;
+import mx.unam.aragon.repository.AlmacenRepository;
 import mx.unam.aragon.repository.EmpleadoRepository;
 import mx.unam.aragon.service.cliente.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class InicioController {
     @Autowired
     ClienteService clienteService;
 
+    @Autowired
+    AlmacenRepository almacenRepository;
+
     @GetMapping("/inicio")
     public String mostrarInicio(@RequestParam(required = false) String correo, Model model, Principal principal) {
         String username = principal.getName(); // Obtenemos el username
@@ -32,6 +36,9 @@ public class InicioController {
                 model.addAttribute("nombreCliente", cliente.getNombre());
             }
         }
+
+        // Almacenes
+        model.addAttribute("almacenes", almacenRepository.findAll());
 
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(username)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));

@@ -14,8 +14,23 @@
 
     <!-- Solo para Gerente -->
     <div class="sec" sec:authorize="hasAuthority('Gerente')">
-        <button>Historial de Ventas</button>
-        <button>Inventario</button>
+        <button th:onclick="'window.location.href=\'' + @{/} + '\''">Historial de Ventas</button>
+        <button onclick="mostrarSeleccionAlmacen()">Inventario</button>
+        <button onclick="">Empleados</button>
+
+        <!-- Modal oculto -->
+        <div id="modalAlmacen" class="modal">
+            <h2>Selecciona el almacén</h2>
+            <select id="almacenSelect" class="form-control">
+                <option th:each="almacen : ${almacenes}"
+                        th:value="${almacen.id}"
+                        th:text="${almacen.nombre}">
+                </option>
+            </select>
+            <br>
+            <button onclick="irAInventario()">Ver Inventario</button>
+            <button class="cancel" onclick="cerrarModal()">Cancelar</button>
+        </div>
     </div>
 
     <!-- Para todos los usuarios autenticados -->
@@ -124,7 +139,7 @@
         });
     }
 
-    // Consumo de la API
+    // Consumo de la API Productos
     fetch('/abarrotes/productos')
         .then(res => res.json())
         .then(data => {
@@ -137,6 +152,7 @@
             crearProductos();
         })
         .catch(error => console.error('Error al obtener productos: ', error));
+
 
 
     function buscarCliente() {
@@ -174,6 +190,19 @@
         if (numeros.length > 6) formateado += ' ' + numeros.slice(6, 10);
 
         input.value = formateado;
+    }
+
+    function mostrarSeleccionAlmacen() {
+        document.getElementById('modalAlmacen').style.display = 'block';
+    }
+
+    function cerrarModal() {
+        document.getElementById('modalAlmacen').style.display = 'none';
+    }
+
+    function irAInventario() {
+        const almacen = document.getElementById('almacenSelect').value;
+        window.location.href = '/inventario?idAlmacen=' + almacen;
     }
 </script>
 </body>

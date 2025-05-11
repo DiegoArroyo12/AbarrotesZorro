@@ -1,0 +1,58 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: rgb(216, 42, 42);
+    margin: 0;
+    padding: 2rem;
+  }
+
+  .inventario-container {
+    max-width: 1000px;
+    margin: auto;
+    background-color: orange;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 2rem;
+  }
+
+  .inventario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .inventario-header h1 {
+    margin: 0;
+    color: rgb(216, 42, 42);
+  }
+
+  .inventario-acciones button {
+    margin-left: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: rgb(216, 42, 42);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .inventario-acciones button:hover {
+    background-color: #d22230;
+  }
+
+  .tabla-productos table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tabla-productos th, .tabla-productos td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #d22230;
+  }
+
+  .tabla-productos th {
+    background-color: rgb(216, 42, 42);
+    color: white;
+  }

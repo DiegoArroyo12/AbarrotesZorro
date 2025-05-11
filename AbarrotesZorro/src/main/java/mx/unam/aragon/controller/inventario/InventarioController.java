@@ -5,8 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.security.Principal;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class InventarioController {
@@ -15,8 +14,9 @@ public class InventarioController {
     InventarioRepository inventarioRepository;
 
     @GetMapping("/inventario")
-    public String mostrarInventario(Model model, Principal principal) {
-        /* Mantener el empleado que inicio sesión */
+    public String mostrarInventario(@RequestParam("idAlmacen") Integer idAlmacen, Model model) {
+        model.addAttribute("inventario", inventarioRepository.findByAlmacen(idAlmacen));
+        model.addAttribute("idAlmacen", idAlmacen);
         return "inventario";
     }
 }
