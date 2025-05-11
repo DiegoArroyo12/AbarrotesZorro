@@ -1,17 +1,21 @@
-body {
-    font-family: Arial, Helvetica, sans-serif;
+html {
+    height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5;
+    font-family: 'Poppins', sans-serif;
+    background-color: rgb(216, 42, 42);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container {
-    max-width: 600px;
-    margin: 3rem auto;
-    padding: 2rem;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    padding: 2rem 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    width: 20rem;
+    max-width: 400px;
 }
 
 h1 {
@@ -57,10 +61,15 @@ input[type="email"]:focus {
     border: 1px solid #f5c2c7;
 }
 
-button[type="submit"] {
+.text-center {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.button {
     width: 100%;
-    padding: 1rem;
-    background-color: orange;
+    padding: .5rem;
     color: white;
     border: none;
     border-radius: 8px;
@@ -70,11 +79,18 @@ button[type="submit"] {
     transition: background-color 0.3s ease;
 }
 
-button[type="submit"]:hover {
+.success {
+    background-color: orange;
+}
+
+.success:hover {
     background-color: rgb(255, 140, 0);
 }
-body {
+
+.cancel {
     background-color: red;
 }
 
-
+.cancel:hover {
+    background-color: #d22230;
+}

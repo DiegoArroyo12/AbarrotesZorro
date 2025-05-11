@@ -26,7 +26,7 @@ public class ClienteController {
         ClienteEntity cliente = new ClienteEntity();
         model.addAttribute("cliente", cliente);
         model.addAttribute("contenido", "Alta de Cliente");
-        return "nuevo_cliente"; // ← CORREGIDO: guion bajo
+        return "nuevo_cliente";
     }
 
     @PostMapping("guardar")
@@ -37,12 +37,12 @@ public class ClienteController {
                 System.out.println("Error: " + error.getDefaultMessage());
             }
             model.addAttribute("contenido", "Error al guardar cliente");
-            return "nuevo_cliente"; // ← CORREGIDO también aquí
+            return "nuevo_cliente";
         }
 
         clienteService.save(cliente);
         model.addAttribute("contenido", "Cliente almacenado con éxito");
-        return "nuevo_cliente"; // ← Y aquí también
+        return "redirect:/inicio?correo=" + cliente.getCorreo();
     }
 
     @GetMapping("lista-clientes")
