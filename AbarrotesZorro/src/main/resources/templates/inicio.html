@@ -15,8 +15,12 @@
     <!-- Solo para Gerente -->
     <div class="sec" sec:authorize="hasAuthority('Gerente')">
         <button th:onclick="'window.location.href=\'' + @{/} + '\''">Historial de Ventas</button>
-        <button onclick="mostrarSeleccionAlmacen()">Inventario</button>
         <button onclick="">Empleados</button>
+    </div>
+
+    <!-- Para todos los usuarios autenticados -->
+    <div class="sec" sec:authorize="isAuthenticated()">
+        <button onclick="mostrarSeleccionAlmacen()">Inventario</button>
 
         <!-- Modal oculto -->
         <div id="modalAlmacen" class="modal">
@@ -31,10 +35,7 @@
             <button onclick="irAInventario()">Ver Inventario</button>
             <button class="cancel" onclick="cerrarModal()">Cancelar</button>
         </div>
-    </div>
 
-    <!-- Para todos los usuarios autenticados -->
-    <div class="sec" sec:authorize="isAuthenticated()">
         <h2>Cliente</h2>
 
         <h4 id="nombreCliente" th:text="${nombreCliente}">Nombre del Cliente</h4>
@@ -52,13 +53,22 @@
     </div>
 
     <form class="side-footer" th:action="@{/logout}" method="post">
-        <h3>Empleado:</h3>
-        <h4 th:text="${nombreEmpleado}">Nombre del Empleado</h4>
         <button>Cerrar Sesión</button>
     </form>
 </div>
 
 <div class="main">
+    <div class="empleado-info">
+        <div>
+            <h2>Almacén:</h2>
+            <!--<h3 th:text="${nombreAlmacen}">Nombre del Almacén</h3>-->
+            <h3>Nombre del Almacén</h3>
+        </div>
+        <div>
+            <h2>Empleado:</h2>
+            <h3 th:text="${nombreEmpleado}">Nombre del Empleado</h3>
+        </div>
+    </div>
     <div class="productos">
         <!-- Plantilla para productos -->
         <div class="producto template" style="display: none;">

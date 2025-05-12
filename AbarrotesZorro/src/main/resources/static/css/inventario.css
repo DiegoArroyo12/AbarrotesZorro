@@ -26,8 +26,15 @@ body {
     color: rgb(216, 42, 42);
   }
 
+  .inventario-acciones {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+
   .inventario-acciones button {
-    margin-left: 1rem;
+    margin: 0;
     padding: 0.5rem 1rem;
     background-color: rgb(216, 42, 42);
     color: white;

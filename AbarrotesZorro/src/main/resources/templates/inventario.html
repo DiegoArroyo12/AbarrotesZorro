@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,11 +11,13 @@
 <body>
 <div class="inventario-container">
   <header class="inventario-header">
-    <h1>Inventario del Almacén</h1>
+    <h1>Inventario del <span th:text="${nombreAlmacen}">Nombre del Almacén</span></h1>
     <div class="inventario-acciones">
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
-      <button onclick="location.href='/inventario/nuevo-producto'">Agregar Producto</button>
-      <button onclick="location.href='/inventario/realizar-pedido'">Pedido a Proveedor</button>
+      <div sec:authorize="hasAuthority('Gerente')">
+        <button onclick="location.href='/inventario/nuevo-producto'">Agregar Producto</button>
+        <button onclick="location.href='/inventario/realizar-pedido'">Pedido a Proveedor</button>
+      </div>
     </div>
   </header>
 
@@ -30,12 +32,12 @@
       </tr>
       </thead>
       <tbody>
-      <tr th:each="producto : ${productos}">
-        <td th:text="${producto.nombre}">Nombre</td>
-        <td th:text="${producto.categoria}">Imagen</td>
-        <td th:text="${producto.cantidad}">Cantidad</td>
-        <td th:text="${producto.precio}">Precio</td>
-      </tr>
+        <tr th:each="producto : ${productos}">
+          <td th:text="${producto.nombre}">Nombre</td>
+          <td><img th:src="@{${producto.imagen}}" alt="Imagen" style="width: 50px; height: auto;"></td>
+          <td th:text="${producto.stock}">Cantidad</td>
+          <td th:text="${producto.precio}">Precio</td>
+        </tr>
       </tbody>
     </table>
   </section>
