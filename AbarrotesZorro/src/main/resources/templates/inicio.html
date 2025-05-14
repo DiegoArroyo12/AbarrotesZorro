@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link th:href="@{/css/inicio.css}" rel="stylesheet">
-    <link rel="stylesheet" href="inicio.css">
     <title>Inicio Abarrotes</title>
 </head>
 <body>
 <div class="sidebar">
-    <h1>Logo</h1>
+    <img th:src="@{/img/abarrotes.png}" alt="zorro" class="logo">
 
     <!-- Solo para Gerente -->
     <div class="sec" sec:authorize="hasAuthority('Gerente')">
@@ -61,12 +62,27 @@
     <div class="empleado-info">
         <div>
             <h2>Almacén:</h2>
-            <!--<h3 th:text="${nombreAlmacen}">Nombre del Almacén</h3>-->
-            <h3>Nombre del Almacén</h3>
+            <select name="almacenSeleccionado" id="almacenSeleccionado" class="form-control" onchange="cargarProductosPorAlmacen()">
+                <option value="" disabled selected>Seleccione un almacén</option>
+                <option th:each="almacen : ${almacenes}"
+                        th:value="${almacen.id}"
+                        th:text="${almacen.nombre}">
+                </option>
+            </select>
         </div>
         <div>
             <h2>Empleado:</h2>
             <h3 th:text="${nombreEmpleado}">Nombre del Empleado</h3>
+        </div>
+        <div>
+            <h2>Caja</h2>
+            <select name="cajaSeleccionada" id="cajaSeleccionada" class="form-control" onchange="registrarAccesoCaja()" disabled>
+                <option value="" disabled selected>Seleccione una caja</option>
+                <option th:each="caja : ${cajas}"
+                        th:value="${caja.id}"
+                        th:text="${caja.nombre}">
+                </option>
+            </select>
         </div>
     </div>
     <div class="productos">
@@ -77,6 +93,8 @@
             <div class="cantidad-control">
                 <button class="menos">-</button>
                 <span class="cantidad">0</span>
+                <span>/</span>
+                <span class="stock">0</span>
                 <button class="mas">+</button>
             </div>
         </div>
@@ -129,6 +147,7 @@
 
             clon.querySelector(".nombre-producto").textContent = producto.nombre;
             clon.querySelector(".precio-producto").textContent = `$${producto.precio}`;
+            clon.querySelector(".stock").textContent = producto.stock;
             const cantidadSpan = clon.querySelector(".cantidad");
 
             clon.querySelector(".mas").addEventListener("click", () => {
@@ -148,22 +167,6 @@
             contenedorProductos.appendChild(clon);
         });
     }
-
-    // Consumo de la API Productos
-    fetch('/abarrotes/productos')
-        .then(res => res.json())
-        .then(data => {
-            data.forEach(p => {
-                productos.push({
-                    nombre: p.nombre,
-                    precio: p.precio
-                });
-            });
-            crearProductos();
-        })
-        .catch(error => console.error('Error al obtener productos: ', error));
-
-
 
     function buscarCliente() {
         const correo = document.getElementById('correo').value;
@@ -213,6 +216,54 @@
     function irAInventario() {
         const almacen = document.getElementById('almacenSelect').value;
         window.location.href = '/inventario?idAlmacen=' + almacen;
+    }
+
+    function cargarProductosPorAlmacen() {
+        const idAlmacen = document.getElementById('almacenSeleccionado').value;
+        productos.length = 0;
+        cantidades.length = 0;
+        contenedorProductos.innerHTML = '';
+
+        // Habilita el select de cajas
+        document.getElementById('cajaSeleccionada').disabled = !idAlmacen;
+
+        fetch(`/abarrotes/productos?idAlmacen=${idAlmacen}`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(p => {
+                    productos.push({
+                        nombre: p.nombre,
+                        precio: p.precio,
+                        stock: p.stock
+                    });
+                });
+                crearProductos();
+            })
+            .catch(error => console.error('Error al obtener productos: ', error));
+    }
+
+    function registrarAccesoCaja() {
+    const idAlmacen = document.getElementById('almacenSeleccionado').value;
+    const idCaja = document.getElementById('cajaSeleccionada').value;
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    fetch('/registro-acceso', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            [csrfHeader]: csrfToken
+        },
+        body: 'idAlmacen=' + encodeURIComponent(idAlmacen) + '&idCaja=' + encodeURIComponent(idCaja)
+        }).then(response => {
+            console.log("Status: ", response.status);
+            return response.text();
+        }).then(text => {
+            console.log("Respuesta: ", text);
+        }).catch(error => {
+            console.error("Error de red al registrar acceso: ", error);
+        });
     }
 </script>
 </body>

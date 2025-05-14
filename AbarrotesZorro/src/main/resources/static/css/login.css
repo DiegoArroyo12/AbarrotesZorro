@@ -1,4 +1,4 @@
-/* Centrar contenido */
+/* Centrar todo */
 body, html {
     height: 100%;
     margin: 0;
@@ -32,7 +32,10 @@ body, html {
     flex-direction: column;
 }
 
-
+/* Logo */
+.logo {
+    margin-bottom: 2rem;
+}
 
 .input-group {
     position: relative;
@@ -55,6 +58,21 @@ body, html {
     color: rgb(216, 42, 42);
     font-weight: bold;
     font-size: 0.9rem;
+}
+
+/* Contraseña */
+.passwordIn {
+    position: relative;
+}
+
+.eye {
+    position: absolute;
+    right: .5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 /* Botón */

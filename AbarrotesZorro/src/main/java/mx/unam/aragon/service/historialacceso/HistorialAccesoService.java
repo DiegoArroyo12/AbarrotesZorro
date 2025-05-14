@@ -1,6 +1,5 @@
 package mx.unam.aragon.service.historialacceso;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
 import mx.unam.aragon.model.entity.HistorialAccesoEntity;
 
 import java.util.List;
@@ -10,4 +9,10 @@ public interface HistorialAccesoService {
     List<HistorialAccesoEntity> findAll();
     void deleteById(Long id);
     HistorialAccesoEntity findById(Long id);
+
+    void registrarAcceso(
+            Integer idEmpleado,
+            Integer idCaja,
+            Integer idAlmacen
+    );
 }

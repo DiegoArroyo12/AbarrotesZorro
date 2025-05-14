@@ -43,18 +43,6 @@ CREATE TABLE cajas (
 
 INSERT INTO cajas VALUES (1 , "Caja 1"), (2 , "Caja 2"), (3 , "Caja 3"), (4 , "Caja 4"), (5 , "Caja 5"), (6 , "Caja 6");
 
--- Historial de accesos
-DROP TABLE IF EXISTS historial_accesos;
-CREATE TABLE historial_accesos (
-  id_acceso INT PRIMARY KEY AUTO_INCREMENT,
-  id_empleado INT NOT NULL,
-  id_caja INT NOT NULL,
-  fecha_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  fecha_salida TIMESTAMP NULL,
-  FOREIGN KEY (id_empleado) REFERENCES empleados(id_empleado),
-  FOREIGN KEY (id_caja) REFERENCES cajas(id_caja)
-);
-
 -- Clientes
 DROP TABLE IF EXISTS clientes;
 CREATE TABLE clientes (
@@ -195,6 +183,20 @@ INSERT INTO inventarios (id_producto, id_almacen, stock) VALUES
 (18, 3, 50),
 (19, 3, 30),
 (20, 3, 95);
+
+-- Historial de accesos
+DROP TABLE IF EXISTS historial_accesos;
+CREATE TABLE historial_accesos (
+  id_acceso INT PRIMARY KEY AUTO_INCREMENT,
+  id_empleado INT NOT NULL,
+  id_caja INT,
+  id_almacen INT NOT NULL,
+  fecha_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  fecha_salida TIMESTAMP NULL,
+  FOREIGN KEY (id_empleado) REFERENCES empleados(id_empleado),
+  FOREIGN KEY (id_caja) REFERENCES cajas(id_caja),
+  FOREIGN KEY (id_almacen) REFERENCES almacenes(id_almacen)
+);
 
 -- Movimientos de inventario (entrada/salida)
 DROP TABLE IF EXISTS movimientos_inventarios;

@@ -26,8 +26,6 @@ public class EmpleadoUserDetailsService implements UserDetailsService {
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        System.out.println("Autenticando usuario: " + username);
-        System.out.println("Contraseña hash en DB: " + empleado.getPassword_hash());
         empleado.getRoles().forEach(rol -> System.out.println("Rol asignado: " + rol.getNombre()));
 
 

@@ -27,6 +27,10 @@ public class HistorialAccesoEntity {
     @JoinColumn(name = "id_caja")
     private CajaEntity caja;
 
+    @ManyToOne
+    @JoinColumn(name = "id_almacen")
+    private AlmacenEntity almacen;
+
     @Column(name = "fecha_entrada")
     private LocalDate fecha_entrada;
 

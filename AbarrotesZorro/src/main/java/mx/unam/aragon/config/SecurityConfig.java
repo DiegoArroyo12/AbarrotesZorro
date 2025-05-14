@@ -4,6 +4,7 @@ import mx.unam.aragon.service.empleado.EmpleadoUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +25,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**").permitAll() // permite el acceso
+                        .requestMatchers("/login", "/css/**", "/js/**", "/img/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/registro-acceso").permitAll()
+                        .requestMatchers("/inicio", "/abarrotes/**", "/cliente/**", "/inventario").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

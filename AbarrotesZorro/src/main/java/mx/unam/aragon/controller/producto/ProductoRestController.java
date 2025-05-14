@@ -1,10 +1,13 @@
 package mx.unam.aragon.controller.producto;
 
 import mx.unam.aragon.model.entity.ProductoEntity;
+import mx.unam.aragon.model.entity.view.ProductoInventarioView;
+import mx.unam.aragon.repository.InventarioRepository;
 import mx.unam.aragon.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -14,10 +17,10 @@ import java.util.List;
 public class ProductoRestController {
 
     @Autowired
-    private ProductoRepository productoRepository;
+    private InventarioRepository inventarioRepository;
 
     @GetMapping
-    public List<ProductoEntity> obtenerProductos() {
-        return productoRepository.findAll();
+    public List<ProductoInventarioView> obtenerProductos(@RequestParam("idAlmacen") Integer idAlmacen) {
+        return inventarioRepository.findProductosPorAlmacen(idAlmacen);
     }
 }
