@@ -53,8 +53,8 @@
         </button>
     </div>
 
-    <form class="side-footer" th:action="@{/logout}" method="post">
-        <button>Cerrar Sesión</button>
+    <form class="side-footer" th:action="@{/custom-logout}" method="get">
+        <button type="submit">Cerrar Sesión</button>
     </form>
 </div>
 
@@ -151,9 +151,13 @@
             const cantidadSpan = clon.querySelector(".cantidad");
 
             clon.querySelector(".mas").addEventListener("click", () => {
-                cantidades[i]++;
-                cantidadSpan.textContent = cantidades[i];
-                actualizarCarrito();
+                if (cantidades[i] < producto.stock) {
+                    cantidades[i]++;
+                    cantidadSpan.textContent = cantidades[i];
+                    actualizarCarrito();
+                } else {
+                    alert("No hay más stock disponible para este producto.");
+                }
             });
 
             clon.querySelector(".menos").addEventListener("click", () => {

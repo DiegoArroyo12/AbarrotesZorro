@@ -90,7 +90,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background-color: #1a3666;
+    background-color: rgb(111, 24, 24);
 }
 
 .notification {

@@ -10,9 +10,13 @@ public interface HistorialAccesoService {
     void deleteById(Long id);
     HistorialAccesoEntity findById(Long id);
 
+    void registrarEntradaInicial(String username);
+
     void registrarAcceso(
             Integer idEmpleado,
             Integer idCaja,
             Integer idAlmacen
     );
+
+    void registrarSalida(String username);
 }

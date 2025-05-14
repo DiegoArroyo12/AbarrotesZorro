@@ -32,7 +32,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/inicio", true)
+                        .defaultSuccessUrl("/registrar-entrada", true)
                         .permitAll()
                 )
                 .logout(LogoutConfigurer::permitAll)
