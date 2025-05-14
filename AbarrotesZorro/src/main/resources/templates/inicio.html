@@ -61,14 +61,8 @@
 <div class="main">
     <div class="empleado-info">
         <div>
-            <h2>Almacén:</h2>
-            <select name="sucursalSeleccionado" id="sucursalSeleccionado" class="form-control" onchange="cargarProductosPorSucursal()">
-                <option value="" disabled selected>Seleccione un almacén</option>
-                <option th:each="sucursal : ${sucursales}"
-                        th:value="${sucursal.id}"
-                        th:text="${sucursal.nombre}">
-                </option>
-            </select>
+            <h2>Sucursal:</h2>
+            <h3 th:text="${nombreSucursal}">Nombre Sucursal</h3>
         </div>
         <div>
             <h2>Empleado:</h2>
@@ -76,8 +70,8 @@
         </div>
         <div>
             <h2>Caja</h2>
-            <select name="cajaSeleccionada" id="cajaSeleccionada" class="form-control" onchange="registrarAccesoCaja()" disabled>
-                <option value="" disabled selected>Seleccione una caja</option>
+            <select name="cajaSeleccionada" id="cajaSeleccionada" class="form-control" onchange="registrarAccesoCaja()">
+                <option value="" selected>Seleccione una caja</option>
                 <option th:each="caja : ${cajas}"
                         th:value="${caja.id}"
                         th:text="${caja.nombre}">
@@ -108,7 +102,30 @@
     </ul>
     <div class="total">Total: $0</div>
     <button class="realizar-compra" onclick="realizarCompra()">Realizar</button></div>
-<script>
+<script th:inline="javascript">
+    // Ejecutar esta función al terminar de cargar el DOM
+    window.addEventListener("DOMContentLoaded", () => {
+        const idSucursal = [[${idSucursal}]];
+        console.log(idSucursal);
+        productos.length = 0;
+        cantidades.length = 0;
+        contenedorProductos.innerHTML = '';
+
+        fetch(`/abarrotes/productos?idSucursal=${idSucursal}`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(p => {
+                    productos.push({
+                        nombre: p.nombre,
+                        precio: p.precio,
+                        stock: p.stock
+                    });
+                });
+                crearProductos();
+            })
+            .catch(error => console.error('Error al obtener productos: ', error));
+    });
+
     const productos = [];
     const cantidades = [];
 
@@ -117,6 +134,7 @@
     const carritoLista = document.querySelector(".carrito ul");
     const totalDiv = document.querySelector(".carrito .total");
 
+    // Armar el Carrito
     function actualizarCarrito() {
         carritoLista.innerHTML = "";
         let total = 0;
@@ -136,6 +154,7 @@
         totalDiv.textContent = `Total: $${total}`;
     }
 
+    // Cargar los productos de la sucursal
     function crearProductos() {
         productos.forEach((producto, i) => {
             cantidades[i] = 0;
@@ -171,6 +190,7 @@
         });
     }
 
+    // Obtener datos del cliente
     function buscarCliente() {
         const correo = document.getElementById('correo').value;
         const telefono = document.getElementById('telefono').value;
@@ -191,6 +211,7 @@
             });
     }
 
+    // Formato del telefono
     function formatearTelefono(input) {
         // Elimina todo lo que no sea número
         let numeros = input.value.replace(/\D/g, '');
@@ -221,53 +242,32 @@
         window.location.href = '/inventario?idSucursal=' + sucursal;
     }
 
-    function cargarProductosPorSucursal() {
-        const idSucursal = document.getElementById('sucursalSeleccionado').value;
-        productos.length = 0;
-        cantidades.length = 0;
-        contenedorProductos.innerHTML = '';
-
-        // Habilita el select de cajas
-        document.getElementById('cajaSeleccionada').disabled = !idSucursal;
-
-        fetch(`/abarrotes/productos?idSucursal=${idSucursal}`)
-            .then(res => res.json())
-            .then(data => {
-                data.forEach(p => {
-                    productos.push({
-                        nombre: p.nombre,
-                        precio: p.precio,
-                        stock: p.stock
-                    });
-                });
-                crearProductos();
-            })
-            .catch(error => console.error('Error al obtener productos: ', error));
-    }
-
+    // Registro de Acceso
     function registrarAccesoCaja() {
-    const idSucursal = document.getElementById('sucursalSeleccionado').value;
-    const idCaja = document.getElementById('cajaSeleccionada').value;
+        const idSucursal = [[${idSucursal}]];
+        const idCaja = document.getElementById('cajaSeleccionada').value;
 
-    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    fetch('/registro-acceso', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            [csrfHeader]: csrfToken
-        },
-        body: 'idSucursal=' + encodeURIComponent(idSucursal) + '&idCaja=' + encodeURIComponent(idCaja)
-        }).then(response => {
-            console.log("Status: ", response.status);
-            return response.text();
-        }).then(text => {
-            console.log("Respuesta: ", text);
-        }).catch(error => {
-            console.error("Error de red al registrar acceso: ", error);
-        });
+        fetch('/registro-acceso', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                [csrfHeader]: csrfToken
+            },
+            body: 'idSucursal=' + encodeURIComponent(idSucursal) + '&idCaja=' + encodeURIComponent(idCaja)
+            }).then(response => {
+                console.log("Status: ", response.status);
+                return response.text();
+            }).then(text => {
+                console.log("Respuesta: ", text);
+            }).catch(error => {
+                console.error("Error de red al registrar acceso: ", error);
+            });
     }
+
+    // Redirección al detalle de venta
     function realizarCompra() {
         const productosCompra = productos.map((producto, i) => ({
             nombre: producto.nombre,

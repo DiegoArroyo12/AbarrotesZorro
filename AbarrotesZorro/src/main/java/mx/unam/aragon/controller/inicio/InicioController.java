@@ -57,15 +57,14 @@ public class InicioController {
             }
         }
 
-        // Sucursales
-        model.addAttribute("sucursales", sucursalRepository.findAll());
-
         // Cajas
         model.addAttribute("cajas", cajaRepository.findAll());
 
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(username)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
         model.addAttribute("nombreEmpleado", empleado.getNombre());
+        model.addAttribute("nombreSucursal", empleado.getSucursal().getNombre());
+        model.addAttribute("idSucursal", empleado.getSucursal().getId());
 
         return "inicio";
     }
@@ -81,13 +80,13 @@ public class InicioController {
 
     @PostMapping("/registro-acceso")
     @ResponseBody
-    public String registrarAccesoAlmacen(@RequestParam("idAlmacen") Integer idAlmacen,
+    public String registrarAccesoAlmacen(@RequestParam("idSucursal") Integer idSucursal,
                                          @RequestParam(value = "idCaja", required = false) Integer idCaja,
                                          Principal principal) {
 
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
-        historialAccesoService.registrarAcceso(empleado.getId().intValue(), idCaja, idAlmacen);
+        historialAccesoService.registrarAcceso(empleado.getId().intValue(), idCaja, idSucursal);
         return "OK";
     }
 }

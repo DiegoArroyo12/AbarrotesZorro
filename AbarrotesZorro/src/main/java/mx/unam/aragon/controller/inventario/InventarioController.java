@@ -23,11 +23,11 @@ public class InventarioController {
 
     @GetMapping("/inventario")
     public String mostrarInventario(@RequestParam("idSucursal") Integer idSucursal, Model model) {
-        model.addAttribute("inventario", inventarioRepository.findByAlmacen(idSucursal));
+        model.addAttribute("inventario", inventarioRepository.findBySucursal(idSucursal));
         model.addAttribute("idSucursal", idSucursal);
 
         String nombreSucursal = sucursalRepository.findById(Long.valueOf(idSucursal)).map(SucursalEntity::getNombre).orElse("Nombre no encontrado");
-        List<ProductoInventarioView> productos = inventarioRepository.findProductosPorAlmacen(idSucursal);
+        List<ProductoInventarioView> productos = inventarioRepository.findProductosPorSucursal(idSucursal);
 
         model.addAttribute("nombreSucursal", nombreSucursal);
         model.addAttribute("productos", productos);

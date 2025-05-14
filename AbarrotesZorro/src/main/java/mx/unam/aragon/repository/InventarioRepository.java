@@ -9,17 +9,17 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface InventarioRepository extends JpaRepository<InventarioEntity, Long> {
-    @Query("SELECT i FROM InventarioEntity i WHERE i.almacen.id = :idAlmacen")
-    List<InventarioEntity> findByAlmacen(Integer idAlmacen);
+    @Query("SELECT i FROM InventarioEntity i WHERE i.sucursal.id = :idSucursal")
+    List<InventarioEntity> findBySucursal(@Param("idSucursal") Integer idSucursal);
 
-    @Query("SELECT a.nombre FROM InventarioEntity i JOIN i.almacen a WHERE a.id = :idAlmacen")
-    String findNombreById(Integer idAlmacen);
+    @Query("SELECT a.nombre FROM InventarioEntity i JOIN i.sucursal a WHERE a.id = :idSucursal")
+    String findNombreById(Integer idSucursal);
 
     @Query("""
         SELECT p.nombre AS nombre, p.imagen AS imagen, i.stock AS stock, p.precio AS precio
         FROM InventarioEntity i
         JOIN i.producto p
-        WHERE i.almacen.id = :idAlmacen
+        WHERE i.sucursal.id = :idSucursal
     """)
-    List<ProductoInventarioView> findProductosPorAlmacen(@Param("idAlmacen") Integer idAlmacen);
+    List<ProductoInventarioView> findProductosPorSucursal(@Param("idSucursal") Integer idSucursal);
 }

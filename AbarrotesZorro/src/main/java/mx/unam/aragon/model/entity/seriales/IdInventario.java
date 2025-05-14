@@ -6,5 +6,5 @@ import java.io.Serializable;
 @Embeddable
 public class IdInventario implements Serializable {
     private Integer id_producto;
-    private Integer id_almacen;
+    private Integer id_sucursal;
 }

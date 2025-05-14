@@ -20,7 +20,7 @@ public class ProductoRestController {
     private InventarioRepository inventarioRepository;
 
     @GetMapping
-    public List<ProductoInventarioView> obtenerProductos(@RequestParam("idAlmacen") Integer idAlmacen) {
-        return inventarioRepository.findProductosPorAlmacen(idAlmacen);
+    public List<ProductoInventarioView> obtenerProductos(@RequestParam("idSucursal") Integer idSucursal) {
+        return inventarioRepository.findProductosPorSucursal(idSucursal);
     }
 }
