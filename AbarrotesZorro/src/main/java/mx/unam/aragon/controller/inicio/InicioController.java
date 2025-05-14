@@ -1,5 +1,8 @@
 package mx.unam.aragon.controller.inicio;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import mx.unam.aragon.model.entity.ClienteEntity;
 import mx.unam.aragon.model.entity.EmpleadoEntity;
 import mx.unam.aragon.repository.AlmacenRepository;
@@ -8,6 +11,7 @@ import mx.unam.aragon.repository.EmpleadoRepository;
 import mx.unam.aragon.service.cliente.ClienteService;
 import mx.unam.aragon.service.historialacceso.HistorialAccesoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +39,12 @@ public class InicioController {
     @Autowired
     private HistorialAccesoService historialAccesoService;
 
+    @GetMapping("/registrar-entrada")
+    public String registrarEntrada(Principal principal) {
+        historialAccesoService.registrarEntradaInicial(principal.getName());
+        return "redirect:/inicio";
+    }
+
     @GetMapping("/inicio")
     public String mostrarInicio(@RequestParam(required = false) String correo, Model model, Principal principal) {
         String username = principal.getName(); // Obtenemos el username
@@ -60,12 +70,20 @@ public class InicioController {
         return "inicio";
     }
 
+    @GetMapping("/custom-logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        historialAccesoService.registrarSalida(username);
+
+        request.logout(); // Cierra sesión en Spring
+        return "redirect:/login?logout";
+    }
+
     @PostMapping("/registro-acceso")
     @ResponseBody
     public String registrarAccesoAlmacen(@RequestParam("idAlmacen") Integer idAlmacen,
                                          @RequestParam(value = "idCaja", required = false) Integer idCaja,
                                          Principal principal) {
-        System.out.println("POST recibido: idAlmacen=" + idAlmacen + ", idCaja=" + idCaja);
 
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));

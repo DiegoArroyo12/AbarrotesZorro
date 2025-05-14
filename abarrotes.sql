@@ -11,7 +11,7 @@ CREATE TABLE empleados (
 	password_hash VARCHAR(100) NOT NULL
 );
 
-INSERT INTO empleados VALUES (1, 'Diego', 'darroyo', '$2a$10$aCKzZl3s3tWZzUf3gYxQeeMKwZA.2IkdiPWxV0yGnZK92pNRp5oFe'), (2, 'Salma', 'snavarro', '$2a$10$/xTJg2Yjws5JOEOfivKAOuHg1IoY4MaU01S6gAVq8GZG/XsEkgKRS');
+INSERT INTO empleados VALUES (1, 'Diego Arroyo', 'darroyo', '$2a$10$aCKzZl3s3tWZzUf3gYxQeeMKwZA.2IkdiPWxV0yGnZK92pNRp5oFe'), (2, 'Salma Navarro', 'snavarro', '$2a$10$/xTJg2Yjws5JOEOfivKAOuHg1IoY4MaU01S6gAVq8GZG/XsEkgKRS');
 
 -- Roles
 DROP TABLE IF EXISTS roles;
@@ -189,8 +189,8 @@ DROP TABLE IF EXISTS historial_accesos;
 CREATE TABLE historial_accesos (
   id_acceso INT PRIMARY KEY AUTO_INCREMENT,
   id_empleado INT NOT NULL,
-  id_caja INT,
-  id_almacen INT NOT NULL,
+  id_caja INT NULL,
+  id_almacen INT NULL,
   fecha_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   fecha_salida TIMESTAMP NULL,
   FOREIGN KEY (id_empleado) REFERENCES empleados(id_empleado),

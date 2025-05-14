@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity(name = "historial_accesos")
 @Data
@@ -32,8 +32,8 @@ public class HistorialAccesoEntity {
     private AlmacenEntity almacen;
 
     @Column(name = "fecha_entrada")
-    private LocalDate fecha_entrada;
+    private LocalDateTime fechaEntrada;
 
     @Column(name = "fecha_salida")
-    private LocalDate fecha_salida;
+    private LocalDateTime fechaSalida;
 }
