@@ -1,8 +1,6 @@
 package mx.unam.aragon.service.detallepedido;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
 import mx.unam.aragon.model.entity.DetallePedidoEntity;
-import mx.unam.aragon.repository.AlmacenRepository;
 import mx.unam.aragon.repository.DetallePedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,6 @@
 package mx.unam.aragon.service.empleadorol;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
 import mx.unam.aragon.model.entity.EmpleadoRolEntity;
-import mx.unam.aragon.repository.AlmacenRepository;
 import mx.unam.aragon.repository.EmpleadoRolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

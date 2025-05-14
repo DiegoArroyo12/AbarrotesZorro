@@ -6,15 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "almacenes")
+@Entity(name = "sucursales")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AlmacenEntity {
+public class SucursalEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_almacen")
+    @Column(name = "id_sucursal")
     private Long id;
 
     @Column(name = "nombre")

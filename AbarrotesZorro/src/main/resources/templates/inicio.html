@@ -21,15 +21,15 @@
 
     <!-- Para todos los usuarios autenticados -->
     <div class="sec" sec:authorize="isAuthenticated()">
-        <button onclick="mostrarSeleccionAlmacen()">Inventario</button>
+        <button onclick="mostrarSeleccionSucursal()">Inventario</button>
 
         <!-- Modal oculto -->
-        <div id="modalAlmacen" class="modal">
+        <div id="modalSucursal" class="modal">
             <h2>Selecciona el almacén</h2>
-            <select id="almacenSelect" class="form-control">
-                <option th:each="almacen : ${almacenes}"
-                        th:value="${almacen.id}"
-                        th:text="${almacen.nombre}">
+            <select id="sucursalSelect" class="form-control">
+                <option th:each="sucursal : ${sucursales}"
+                        th:value="${sucursal.id}"
+                        th:text="${sucursal.nombre}">
                 </option>
             </select>
             <br>
@@ -62,11 +62,11 @@
     <div class="empleado-info">
         <div>
             <h2>Almacén:</h2>
-            <select name="almacenSeleccionado" id="almacenSeleccionado" class="form-control" onchange="cargarProductosPorAlmacen()">
+            <select name="sucursalSeleccionado" id="sucursalSeleccionado" class="form-control" onchange="cargarProductosPorSucursal()">
                 <option value="" disabled selected>Seleccione un almacén</option>
-                <option th:each="almacen : ${almacenes}"
-                        th:value="${almacen.id}"
-                        th:text="${almacen.nombre}">
+                <option th:each="sucursal : ${sucursales}"
+                        th:value="${sucursal.id}"
+                        th:text="${sucursal.nombre}">
                 </option>
             </select>
         </div>
@@ -208,29 +208,29 @@
         input.value = formateado;
     }
 
-    function mostrarSeleccionAlmacen() {
-        document.getElementById('modalAlmacen').style.display = 'block';
+    function mostrarSeleccionSucursal() {
+        document.getElementById('modalSucursal').style.display = 'block';
     }
 
     function cerrarModal() {
-        document.getElementById('modalAlmacen').style.display = 'none';
+        document.getElementById('modalSucursal').style.display = 'none';
     }
 
     function irAInventario() {
-        const almacen = document.getElementById('almacenSelect').value;
-        window.location.href = '/inventario?idAlmacen=' + almacen;
+        const sucursal = document.getElementById('sucursalSelect').value;
+        window.location.href = '/inventario?idSucursal=' + sucursal;
     }
 
-    function cargarProductosPorAlmacen() {
-        const idAlmacen = document.getElementById('almacenSeleccionado').value;
+    function cargarProductosPorSucursal() {
+        const idSucursal = document.getElementById('sucursalSeleccionado').value;
         productos.length = 0;
         cantidades.length = 0;
         contenedorProductos.innerHTML = '';
 
         // Habilita el select de cajas
-        document.getElementById('cajaSeleccionada').disabled = !idAlmacen;
+        document.getElementById('cajaSeleccionada').disabled = !idSucursal;
 
-        fetch(`/abarrotes/productos?idAlmacen=${idAlmacen}`)
+        fetch(`/abarrotes/productos?idSucursal=${idSucursal}`)
             .then(res => res.json())
             .then(data => {
                 data.forEach(p => {
@@ -246,7 +246,7 @@
     }
 
     function registrarAccesoCaja() {
-    const idAlmacen = document.getElementById('almacenSeleccionado').value;
+    const idSucursal = document.getElementById('sucursalSeleccionado').value;
     const idCaja = document.getElementById('cajaSeleccionada').value;
 
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
@@ -258,7 +258,7 @@
             'Content-Type': 'application/x-www-form-urlencoded',
             [csrfHeader]: csrfToken
         },
-        body: 'idAlmacen=' + encodeURIComponent(idAlmacen) + '&idCaja=' + encodeURIComponent(idCaja)
+        body: 'idSucursal=' + encodeURIComponent(idSucursal) + '&idCaja=' + encodeURIComponent(idCaja)
         }).then(response => {
             console.log("Status: ", response.status);
             return response.text();

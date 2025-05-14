@@ -2,16 +2,31 @@ DROP DATABASE IF EXISTS abarrotes;
 CREATE DATABASE IF NOT EXISTS abarrotes;
 USE abarrotes;
 
+-- Sucursales
+DROP TABLE IF EXISTS sucursales;
+CREATE TABLE sucursales (
+	id_sucursal INT PRIMARY KEY AUTO_INCREMENT,
+	nombre VARCHAR(100),
+	ubicacion VARCHAR(255)
+);
+
+INSERT INTO sucursales (nombre, ubicacion) VALUES
+('Sucursal Central', 'Av. Insurgentes Sur 1234, CDMX'),
+('Sucursal Norte', 'Calzada Vallejo 456, CDMX'),
+('Sucursal Sur', 'Periférico Sur 789, CDMX');
+
 -- Empleados
 DROP TABLE IF EXISTS empleados;
 CREATE TABLE empleados (
 	id_empleado INT PRIMARY KEY AUTO_INCREMENT,
 	nombre VARCHAR(50) NOT NULL,
 	usuario VARCHAR(25) NOT NULL UNIQUE,
-	password_hash VARCHAR(100) NOT NULL
+	password_hash VARCHAR(100) NOT NULL,
+    id_sucursal INT NOT NULL,
+    FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal)
 );
 
-INSERT INTO empleados VALUES (1, 'Diego Arroyo', 'darroyo', '$2a$10$aCKzZl3s3tWZzUf3gYxQeeMKwZA.2IkdiPWxV0yGnZK92pNRp5oFe'), (2, 'Salma Navarro', 'snavarro', '$2a$10$/xTJg2Yjws5JOEOfivKAOuHg1IoY4MaU01S6gAVq8GZG/XsEkgKRS');
+INSERT INTO empleados VALUES (1, 'Diego Arroyo', 'darroyo', '$2a$10$aCKzZl3s3tWZzUf3gYxQeeMKwZA.2IkdiPWxV0yGnZK92pNRp5oFe', 1), (2, 'Salma Navarro', 'snavarro', '$2a$10$/xTJg2Yjws5JOEOfivKAOuHg1IoY4MaU01S6gAVq8GZG/XsEkgKRS', 1);
 
 -- Roles
 DROP TABLE IF EXISTS roles;
@@ -91,32 +106,19 @@ INSERT INTO productos (nombre, imagen, precio) VALUES
 ('Detergente en polvo 1kg', NULL, 37.25),
 ('Jabón de baño 3 piezas', NULL, 21.75);
 
--- Almacenes
-DROP TABLE IF EXISTS almacenes;
-CREATE TABLE almacenes (
-	id_almacen INT PRIMARY KEY AUTO_INCREMENT,
-	nombre VARCHAR(100),
-	ubicacion VARCHAR(255)
-);
-
-INSERT INTO almacenes (nombre, ubicacion) VALUES
-('Almacén Central', 'Av. Insurgentes Sur 1234, CDMX'),
-('Almacén Norte', 'Calzada Vallejo 456, CDMX'),
-('Almacén Sur', 'Periférico Sur 789, CDMX');
-
 -- Inventario por almacén
 DROP TABLE IF EXISTS inventarios;
 CREATE TABLE inventarios (
 	id_producto INT NOT NULL,
-	id_almacen INT NOT NULL,
+	id_sucursal INT NOT NULL,
 	stock INT NOT NULL DEFAULT 0,
-	PRIMARY KEY (id_producto, id_almacen),
+	PRIMARY KEY (id_producto, id_sucursal),
 	FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
-	FOREIGN KEY (id_almacen) REFERENCES almacenes(id_almacen)
+	FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal)
 );
 
--- Para Almacén Central (id_almacen = 1)
-INSERT INTO inventarios (id_producto, id_almacen, stock) VALUES
+-- Para Sucursal Central (id_sucursal = 1)
+INSERT INTO inventarios (id_producto, id_sucursal, stock) VALUES
 (1, 1, 150),
 (2, 1, 120),
 (3, 1, 100),
@@ -138,8 +140,8 @@ INSERT INTO inventarios (id_producto, id_almacen, stock) VALUES
 (19, 1, 50),
 (20, 1, 190);
 
--- Para Almacén Norte (id_almacen = 2)
-INSERT INTO inventarios (id_producto, id_almacen, stock) VALUES
+-- Para Sucursal Norte (id_sucursal = 2)
+INSERT INTO inventarios (id_producto, id_sucursal, stock) VALUES
 (1, 2, 80),
 (2, 2, 95),
 (3, 2, 70),
@@ -161,8 +163,8 @@ INSERT INTO inventarios (id_producto, id_almacen, stock) VALUES
 (19, 2, 40),
 (20, 2, 100);
 
--- Para Almacén Sur (id_almacen = 3)
-INSERT INTO inventarios (id_producto, id_almacen, stock) VALUES
+-- Para Sucursal Sur (id_sucursal = 3)
+INSERT INTO inventarios (id_producto, id_sucursal, stock) VALUES
 (1, 3, 60),
 (2, 3, 70),
 (3, 3, 55),
@@ -190,12 +192,12 @@ CREATE TABLE historial_accesos (
   id_acceso INT PRIMARY KEY AUTO_INCREMENT,
   id_empleado INT NOT NULL,
   id_caja INT NULL,
-  id_almacen INT NULL,
+  id_sucursal INT NULL,
   fecha_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   fecha_salida TIMESTAMP NULL,
   FOREIGN KEY (id_empleado) REFERENCES empleados(id_empleado),
   FOREIGN KEY (id_caja) REFERENCES cajas(id_caja),
-  FOREIGN KEY (id_almacen) REFERENCES almacenes(id_almacen)
+  FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal)
 );
 
 -- Movimientos de inventario (entrada/salida)
@@ -203,13 +205,13 @@ DROP TABLE IF EXISTS movimientos_inventarios;
 CREATE TABLE movimientos_inventarios (
 	id_movimiento INT PRIMARY KEY AUTO_INCREMENT,
 	id_producto INT,
-	id_almacen INT,
+	id_sucursal INT,
 	cantidad INT,
 	tipo ENUM('ENTRADA', 'SALIDA'),
 	fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	referencia VARCHAR(50), -- referencia de venta o pedido
 	FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
-	FOREIGN KEY (id_almacen) REFERENCES almacenes(id_almacen)
+	FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal)
 );
 
 -- Ventas

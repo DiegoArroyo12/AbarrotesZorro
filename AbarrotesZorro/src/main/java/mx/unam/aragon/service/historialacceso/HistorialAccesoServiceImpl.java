@@ -1,6 +1,6 @@
 package mx.unam.aragon.service.historialacceso;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
+import mx.unam.aragon.model.entity.SucursalEntity;
 import mx.unam.aragon.model.entity.CajaEntity;
 import mx.unam.aragon.model.entity.EmpleadoEntity;
 import mx.unam.aragon.model.entity.HistorialAccesoEntity;
@@ -64,21 +64,21 @@ public class HistorialAccesoServiceImpl implements HistorialAccesoService {
 
     @Override
     @Transactional
-    public void registrarAcceso(Integer idEmpleado, Integer idCaja, Integer idAlmacen) {
+    public void registrarAcceso(Integer idEmpleado, Integer idCaja, Integer idSucursal) {
         EmpleadoEntity empleado = new EmpleadoEntity();
         empleado.setId(idEmpleado.longValue());
 
         // Buscar el último registro de acceso sin almacén ni caja
         HistorialAccesoEntity ultimoAcceso = historialAccesoRepository.findTopByEmpleadoOrderByFechaEntradaDesc(empleado);
 
-        if (ultimoAcceso != null && ultimoAcceso.getAlmacen() == null && ultimoAcceso.getCaja() == null) {
+        if (ultimoAcceso != null && ultimoAcceso.getSucursal() == null && ultimoAcceso.getCaja() == null) {
             CajaEntity caja = new CajaEntity();
             caja.setId(idCaja.longValue());
             ultimoAcceso.setCaja(caja);
 
-            AlmacenEntity almacen = new AlmacenEntity();
-            almacen.setId(idAlmacen.longValue());
-            ultimoAcceso.setAlmacen(almacen);
+            SucursalEntity sucursal = new SucursalEntity();
+            sucursal.setId(idSucursal.longValue());
+            ultimoAcceso.setSucursal(sucursal);
 
             historialAccesoRepository.save(ultimoAcceso);
         }

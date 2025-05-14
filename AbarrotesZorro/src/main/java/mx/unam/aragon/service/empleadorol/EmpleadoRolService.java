@@ -1,6 +1,5 @@
 package mx.unam.aragon.service.empleadorol;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
 import mx.unam.aragon.model.entity.EmpleadoRolEntity;
 
 import java.util.List;

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Empleados</title>
+  <link rel="stylesheet" th:href="@{/css/empleados.css}">
+  <link rel="stylesheet" href="empleados.css">
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <h1>Empleados de la Sucursal: <span th:text="${sucursalEmpleado.nombre}">Nombre Sucursal</span></h1>
+    <div class="acciones">
+      <button onclick="location.href='/inicio'">Volver a Inicio</button>
+      <div sec:authorize="hasAuthority('Gerente')">
+        <button onclick="location.href='/empleados/nuevo'">Agregar Empleado</button>
+        <button onclick="location.href='/historial-accesos'">Historial de Accesos</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="tabla-productos">
+    <table>
+      <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Sucursal</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="empleado : ${empleados}">
+        <td th:text="${empleado.nombre}">Nombre</td>
+        <td th:text="${empleado.usuario}">Usuario</td>
+        <td th:text="${empleado.stock}">Rol</td>
+        <td th:text="${empleado.precio}">Sucursal</td>
+        <td>
+          <a th:href="@{'/empleados/editar/' + ${empleado.id}}" class="btn btn-sm btn-warning">Editar</a>
+          <a th:href="@{'/empleados/eliminar/' + ${empleado.id}}" class="btn btn-sm btn-danger"
+             onclick="return confirm('¿Estás seguro de eliminar este empleado?')">Eliminar</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+</body>
+</html>

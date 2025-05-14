@@ -15,7 +15,7 @@ public interface HistorialAccesoService {
     void registrarAcceso(
             Integer idEmpleado,
             Integer idCaja,
-            Integer idAlmacen
+            Integer idSucursal
     );
 
     void registrarSalida(String username);

@@ -1,7 +1,8 @@
 package mx.unam.aragon.controller.inventario;
 
+import mx.unam.aragon.model.entity.SucursalEntity;
 import mx.unam.aragon.model.entity.view.ProductoInventarioView;
-import mx.unam.aragon.repository.AlmacenRepository;
+import mx.unam.aragon.repository.SucursalRepository;
 import mx.unam.aragon.repository.InventarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,19 +19,19 @@ public class InventarioController {
     InventarioRepository inventarioRepository;
 
     @Autowired
-    AlmacenRepository almacenRepository;
+    SucursalRepository sucursalRepository;
 
     @GetMapping("/inventario")
-    public String mostrarInventario(@RequestParam("idAlmacen") Integer idAlmacen, Model model) {
-        model.addAttribute("inventario", inventarioRepository.findByAlmacen(idAlmacen));
-        model.addAttribute("idAlmacen", idAlmacen);
+    public String mostrarInventario(@RequestParam("idSucursal") Integer idSucursal, Model model) {
+        model.addAttribute("inventario", inventarioRepository.findByAlmacen(idSucursal));
+        model.addAttribute("idSucursal", idSucursal);
 
-        String nombreAlmacen = almacenRepository.findNombreById(idAlmacen);
-        List<ProductoInventarioView> productos = inventarioRepository.findProductosPorAlmacen(idAlmacen);
+        String nombreSucursal = sucursalRepository.findById(Long.valueOf(idSucursal)).map(SucursalEntity::getNombre).orElse("Nombre no encontrado");
+        List<ProductoInventarioView> productos = inventarioRepository.findProductosPorAlmacen(idSucursal);
 
-        model.addAttribute("nombreAlmacen", nombreAlmacen);
+        model.addAttribute("nombreSucursal", nombreSucursal);
         model.addAttribute("productos", productos);
-        model.addAttribute("nombreAlmacen", nombreAlmacen);
+        model.addAttribute("nombreSucursal", nombreSucursal);
         return "inventario";
     }
 }

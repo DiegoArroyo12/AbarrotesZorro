@@ -1,6 +1,5 @@
 package mx.unam.aragon.service.caja;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
 import mx.unam.aragon.model.entity.CajaEntity;
 
 import java.util.List;

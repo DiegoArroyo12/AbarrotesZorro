@@ -26,7 +26,7 @@ public class MovimientosInventarioEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_almacen")
-    private AlmacenEntity almacen;
+    private SucursalEntity almacen;
 
     @Column(name = "cantidad")
     private Integer cantidad;

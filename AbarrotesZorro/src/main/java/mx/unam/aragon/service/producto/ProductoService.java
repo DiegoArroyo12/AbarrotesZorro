@@ -1,6 +1,5 @@
 package mx.unam.aragon.service.producto;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
 import mx.unam.aragon.model.entity.ProductoEntity;
 
 import java.util.List;

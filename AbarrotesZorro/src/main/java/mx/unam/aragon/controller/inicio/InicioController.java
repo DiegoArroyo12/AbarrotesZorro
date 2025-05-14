@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import mx.unam.aragon.model.entity.ClienteEntity;
 import mx.unam.aragon.model.entity.EmpleadoEntity;
-import mx.unam.aragon.repository.AlmacenRepository;
+import mx.unam.aragon.repository.SucursalRepository;
 import mx.unam.aragon.repository.CajaRepository;
 import mx.unam.aragon.repository.EmpleadoRepository;
 import mx.unam.aragon.service.cliente.ClienteService;
@@ -31,7 +31,7 @@ public class InicioController {
     ClienteService clienteService;
 
     @Autowired
-    AlmacenRepository almacenRepository;
+    SucursalRepository sucursalRepository;
 
     @Autowired
     CajaRepository cajaRepository;
@@ -57,8 +57,8 @@ public class InicioController {
             }
         }
 
-        // Almacenes
-        model.addAttribute("almacenes", almacenRepository.findAll());
+        // Sucursales
+        model.addAttribute("sucursales", sucursalRepository.findAll());
 
         // Cajas
         model.addAttribute("cajas", cajaRepository.findAll());

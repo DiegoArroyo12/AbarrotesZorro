@@ -1,6 +1,5 @@
 package mx.unam.aragon.service.detallepedido;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
 import mx.unam.aragon.model.entity.DetallePedidoEntity;
 
 import java.util.List;

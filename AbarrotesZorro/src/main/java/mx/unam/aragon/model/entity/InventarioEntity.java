@@ -17,7 +17,7 @@ public class InventarioEntity {
     @ManyToOne
     @MapsId("id_almacen")
     @JoinColumn(name = "id_almacen")
-    private AlmacenEntity almacen;
+    private SucursalEntity almacen;
 
     @Column(name = "stock")
     private int stock;

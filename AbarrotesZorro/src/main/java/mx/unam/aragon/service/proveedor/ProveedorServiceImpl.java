@@ -1,8 +1,6 @@
 package mx.unam.aragon.service.proveedor;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
 import mx.unam.aragon.model.entity.ProveedorEntity;
-import mx.unam.aragon.repository.AlmacenRepository;
 import mx.unam.aragon.repository.ProveedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

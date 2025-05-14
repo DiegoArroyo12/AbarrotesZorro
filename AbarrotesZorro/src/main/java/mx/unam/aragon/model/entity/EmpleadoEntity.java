@@ -28,6 +28,10 @@ public class EmpleadoEntity {
     @Column(name = "password_hash")
     private String password_hash;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sucursal", nullable = false)
+    private SucursalEntity sucursal;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "empleado_roles",

@@ -1,8 +1,6 @@
 package mx.unam.aragon.service.inventario;
 
-import mx.unam.aragon.model.entity.AlmacenEntity;
 import mx.unam.aragon.model.entity.InventarioEntity;
-import mx.unam.aragon.repository.AlmacenRepository;
 import mx.unam.aragon.repository.InventarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

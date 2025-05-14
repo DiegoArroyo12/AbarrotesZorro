@@ -28,8 +28,8 @@ public class HistorialAccesoEntity {
     private CajaEntity caja;
 
     @ManyToOne
-    @JoinColumn(name = "id_almacen")
-    private AlmacenEntity almacen;
+    @JoinColumn(name = "id_sucursal")
+    private SucursalEntity sucursal;
 
     @Column(name = "fecha_entrada")
     private LocalDateTime fechaEntrada;
