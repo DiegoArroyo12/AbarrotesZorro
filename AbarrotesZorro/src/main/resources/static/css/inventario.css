@@ -32,7 +32,6 @@ body {
     align-items: center;
   }
 
-
   .inventario-acciones button {
     margin: 0;
     padding: 0.5rem 1rem;
@@ -42,7 +41,13 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 0.9rem;
   }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+    }
 
   .inventario-acciones button:hover {
     background-color: #d22230;

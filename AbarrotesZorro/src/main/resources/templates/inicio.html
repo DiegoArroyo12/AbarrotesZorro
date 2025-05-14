@@ -25,11 +25,12 @@
 
         <!-- Modal oculto -->
         <div id="modalSucursal" class="modal">
-            <h2>Selecciona el almacén</h2>
+            <h2>Selecciona la Sucursal</h2>
             <select id="sucursalSelect" class="form-control">
                 <option th:each="sucursal : ${sucursales}"
                         th:value="${sucursal.id}"
-                        th:text="${sucursal.nombre}">
+                        th:text="${sucursal.nombre}"
+                        th:selected="${sucursal.id == idSucursal}">
                 </option>
             </select>
             <br>

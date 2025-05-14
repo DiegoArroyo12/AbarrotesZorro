@@ -57,11 +57,16 @@ public class InicioController {
             }
         }
 
+        EmpleadoEntity empleado = empleadoRepository.findByUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+
         // Cajas
         model.addAttribute("cajas", cajaRepository.findAll());
 
-        EmpleadoEntity empleado = empleadoRepository.findByUsuario(username)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+        // Sucursales
+        model.addAttribute("sucursales", sucursalRepository.findAll());
+
+        // Datos del Empleado
         model.addAttribute("nombreEmpleado", empleado.getNombre());
         model.addAttribute("nombreSucursal", empleado.getSucursal().getNombre());
         model.addAttribute("idSucursal", empleado.getSucursal().getId());

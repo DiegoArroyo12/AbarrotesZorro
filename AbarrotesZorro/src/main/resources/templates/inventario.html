@@ -11,10 +11,10 @@
 <body>
 <div class="inventario-container">
   <header class="inventario-header">
-    <h1>Inventario del <span th:text="${nombreAlmacen}">Nombre del Almacén</span></h1>
+    <h1>Inventario de la <span th:text="${nombreSucursal}">Nombre Sucursal</span></h1>
     <div class="inventario-acciones">
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
-      <div sec:authorize="hasAuthority('Gerente')">
+      <div sec:authorize="hasAuthority('Gerente')" class="buttons">
         <button onclick="location.href='/inventario/nuevo-producto'">Agregar Producto</button>
         <button onclick="location.href='/inventario/realizar-pedido'">Pedido a Proveedor</button>
       </div>
