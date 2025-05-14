@@ -107,8 +107,7 @@
         <!-- Se insertan los productos con JS -->
     </ul>
     <div class="total">Total: $0</div>
-    <button class="realizar-compra">Realizar</button>
-</div>
+    <button class="realizar-compra" onclick="realizarCompra()">Realizar</button></div>
 <script>
     const productos = [];
     const cantidades = [];
@@ -268,6 +267,38 @@
         }).catch(error => {
             console.error("Error de red al registrar acceso: ", error);
         });
+    }
+    function realizarCompra() {
+        const productosCompra = productos.map((producto, i) => ({
+            nombre: producto.nombre,
+            precio: producto.precio,
+            cantidad: cantidades[i]
+        })).filter(p => p.cantidad > 0);
+
+        if (productosCompra.length === 0) {
+            alert("El carrito está vacío.");
+            return;
+        }
+
+        fetch('/detalle-venta', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                    document.querySelector('meta[name="_csrf"]').getAttribute('content')
+            },
+            body: JSON.stringify(productosCompra)
+        })
+            .then(response => response.text())
+            .then(html => {
+                const nuevaVentana = window.open("", "_blank");
+                nuevaVentana.document.write(html);
+                nuevaVentana.document.close();
+            })
+            .catch(err => {
+                console.error('Error al realizar compra:', err);
+                alert("Error al realizar la compra.");
+            });
     }
 </script>
 </body>
