@@ -2,13 +2,29 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de la Venta</title>
     <link th:href="@{/css/detalleVenta.css}" rel="stylesheet">
-    <link rel="stylesheet" href="detalleVenta.css">
-    <title>Detalles Venta</title>
 </head>
 <body>
-
+<h1>Detalle de la Venta</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio unitario</th>
+        <th>Subtotal</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="p : ${productos}">
+        <td th:text="${p.nombre}"></td>
+        <td th:text="${p.cantidad}"></td>
+        <td th:text="${p.precio}"></td>
+        <td th:text="${p.precio * p.cantidad}"></td>
+    </tr>
+    </tbody>
+</table>
+<h2 th:text="'Total: $' + ${total}"></h2>
 </body>
 </html>
