@@ -14,7 +14,7 @@
     <div class="acciones">
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
       <div sec:authorize="hasAuthority('Gerente')" class="buttons">
-        <button onclick="location.href='/empleados/nuevo'">Agregar Empleado</button>
+        <button th:onclick="'window.location.href=\'/empleados/nuevo?idSucursal=' + ${idSucursal} + '\''">Agregar Empleado</button>
         <button onclick="location.href='/historial-accesos'">Historial de Accesos</button>
       </div>
     </div>

@@ -1,19 +1,21 @@
 package mx.unam.aragon.controller.empleado;
 
+import jakarta.validation.Valid;
 import mx.unam.aragon.model.entity.EmpleadoEntity;
 import mx.unam.aragon.model.entity.RolEntity;
 import mx.unam.aragon.model.entity.SucursalEntity;
 import mx.unam.aragon.repository.EmpleadoRepository;
 import mx.unam.aragon.repository.RolRepository;
 import mx.unam.aragon.repository.SucursalRepository;
+import mx.unam.aragon.service.empleado.EmpleadoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @Controller
@@ -28,6 +30,12 @@ public class EmpleadoController {
     @Autowired
     RolRepository rolRepository;
 
+    @Autowired
+    private EmpleadoService empleadoService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("/empleados")
     public String mostrarEmpleados(@RequestParam("idSucursal") Integer idSucursal, Model model) {
         // Lista de empleados de la sucursal
@@ -40,10 +48,55 @@ public class EmpleadoController {
         List<RolEntity> roles = rolRepository.findAll();
 
         model.addAttribute("sucursalEmpleado", nombreSucursal);
+        model.addAttribute("idSucursal", idSucursal);
         model.addAttribute("empleados", empleados);
         model.addAttribute("roles", roles);
 
         return "empleados";
+    }
+
+    @GetMapping("/empleados/nuevo")
+    public String altaEmpleado(@RequestParam("idSucursal") Integer idSucursal, Model model) {
+        EmpleadoEntity empleado = new EmpleadoEntity();
+        model.addAttribute("empleado", empleado);
+
+        // Sucursales
+        model.addAttribute("sucursales", sucursalRepository.findAll());
+        // Roles
+        model.addAttribute("roles", rolRepository.findAll());
+        model.addAttribute("idSucursal", idSucursal);
+        return "nuevo_empleado";
+    }
+
+    @PostMapping("/empleados/guardar")
+    public String guardarEmpleado(@Valid @ModelAttribute("empleado") EmpleadoEntity empleado,
+                                  @RequestParam("sucursal") Long sucursalId,
+                                  @RequestParam("rol") Long rolId,
+                                  BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            for (ObjectError error : result.getAllErrors()) {
+                System.out.println("Error: " + error.getDefaultMessage());
+            }
+            model.addAttribute("contenido", "Error al guardar empleado");
+            return "nuevo_empleado";
+        }
+
+        SucursalEntity sucursal = sucursalRepository.findById(sucursalId).orElse(null);
+        RolEntity rol = rolRepository.findById(rolId).orElse(null);
+
+        if (sucursal != null && rol != null) {
+            empleado.setSucursal(sucursal);
+            empleado.setActivo(true);
+
+            // Encriptar la contraseña antes de guardar
+            empleado.setPassword_hash(passwordEncoder.encode(empleado.getPassword_hash()));
+
+            empleado.getRoles().add(rol);
+            empleadoService.save(empleado);
+        }
+
+        model.addAttribute("contenido", "Empleado Creado Exitosamente");
+        return "redirect:/empleados?idSucursal=" + sucursalId;
     }
 
     @PostMapping("/empleados/actualizar")

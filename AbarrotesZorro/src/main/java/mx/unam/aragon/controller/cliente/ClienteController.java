@@ -41,7 +41,7 @@ public class ClienteController {
         }
 
         clienteService.save(cliente);
-        model.addAttribute("contenido", "Cliente almacenado con éxito");
+        model.addAttribute("contenido", "Cliente Creado Exitosamente");
         return "redirect:/inicio?correo=" + cliente.getCorreo();
     }
 
