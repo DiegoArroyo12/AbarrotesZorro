@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>Empleados</title>
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
   <link rel="stylesheet" th:href="@{/css/empleados.css}">
-  <link rel="stylesheet" href="empleados.css">
 </head>
 <body>
 <div class="container">
   <header class="header">
-    <h1>Empleados de la Sucursal: <span th:text="${sucursalEmpleado.nombre}">Nombre Sucursal</span></h1>
+    <h1>Empleados de la <span th:text="${sucursalEmpleado}">Nombre Sucursal</span></h1>
     <div class="acciones">
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
-      <div sec:authorize="hasAuthority('Gerente')">
+      <div sec:authorize="hasAuthority('Gerente')" class="buttons">
         <button onclick="location.href='/empleados/nuevo'">Agregar Empleado</button>
         <button onclick="location.href='/historial-accesos'">Historial de Accesos</button>
       </div>
@@ -26,20 +27,34 @@
         <th>Nombre</th>
         <th>Usuario</th>
         <th>Rol</th>
-        <th>Sucursal</th>
         <th>Acciones</th>
       </tr>
       </thead>
       <tbody>
       <tr th:each="empleado : ${empleados}">
-        <td th:text="${empleado.nombre}">Nombre</td>
-        <td th:text="${empleado.usuario}">Usuario</td>
-        <td th:text="${empleado.stock}">Rol</td>
-        <td th:text="${empleado.precio}">Sucursal</td>
         <td>
-          <a th:href="@{'/empleados/editar/' + ${empleado.id}}" class="btn btn-sm btn-warning">Editar</a>
-          <a th:href="@{'/empleados/eliminar/' + ${empleado.id}}" class="btn btn-sm btn-danger"
-             onclick="return confirm('¿Estás seguro de eliminar este empleado?')">Eliminar</a>
+          <span th:text="${empleado.nombre}"></span>
+          <input id="nombre" type="text" th:value="${empleado.nombre}" style="display:none;" />
+        </td>
+        <td>
+          <span th:text="${empleado.usuario}"></span>
+          <input id="usuario" type="text" th:value="${empleado.usuario}" style="display:none;" />
+        </td>
+        <td>
+          <span th:text="${#lists.isEmpty(empleado.roles) ? 'Sin rol' : empleado.roles[0].nombre}">Rol</span>
+          <select id="rolSelect" style="display:none;">
+            <option th:each="rol : ${roles}"
+                    th:value="${rol.id}"
+                    th:text="${rol.nombre}"
+                    th:selected="${rol.id == empleado.roles[0].id}">
+            </option>
+          </select>
+        </td>
+        <td>
+          <button id="edit" th:attr="data-id=${empleado.id}" onclick="editarEmpleado(this)" class="btn-edit">Editar</button>
+          <button id="save" th:attr="data-id=${empleado.id}" onclick="guardarEmpleado(this)" style="display:none;" class="btn-edit">Guardar</button>
+          <button id="delete" th:attr="data-id=${empleado.id}" onclick="eliminarEmpleado(this)" class="btn-delete">Eliminar</button>
+          <button id="cancel" th:attr="data-id=${empleado.id}" onclick="cancelarEdicion(this)" style="display:none;" class="btn-delete">Cancelar</button>
         </td>
       </tr>
       </tbody>
@@ -47,4 +62,117 @@
   </section>
 </div>
 </body>
+<script>
+  // Editar Empleado
+  function editarEmpleado(button) {
+    const row = button.closest('tr');
+    row.querySelector('#edit').style.display = 'none';
+    row.querySelector('#save').style.display = 'inline';
+    row.querySelector('#delete').style.display = 'none';
+    row.querySelector('#cancel').style.display = 'inline';
+
+    row.querySelector('#nombre').style.display = 'inline';
+    row.querySelector('#usuario').style.display = 'inline';
+    row.querySelector('#rolSelect').style.display = 'inline';
+
+    row.querySelectorAll('span').forEach(span => span.style.display = 'none');
+  }
+
+  // Guardar Cambios
+  function guardarEmpleado(button) {
+    const row = button.closest('tr');
+    const nombreInput = row.querySelector('#nombre');
+    const usuarioInput = row.querySelector('#usuario');
+    const rolSelect = row.querySelector('#rolSelect');
+    const id = button.getAttribute('data-id');
+
+    const datos = {
+        nombre: nombreInput.value,
+        usuario: usuarioInput.value,
+        rol: rolSelect.value
+    };
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    fetch('/empleados/actualizar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        [csrfHeader]: csrfToken
+      },
+      body: `id=${encodeURIComponent(id)}&nombre=${encodeURIComponent(datos.nombre)}&usuario=${encodeURIComponent(datos.usuario)}&rol=${encodeURIComponent(datos.rol)}`
+    })
+    .then(response => response.text())
+    .then(data => {
+      if(data.includes('correctamente')) {
+        // Actualizar los spans con el nuevo valor
+        const spans = row.querySelectorAll('span');
+        spans[0].textContent = datos.nombre;
+        spans[1].textContent = datos.usuario;
+        spans[2].textContent = rolSelect.options[rolSelect.selectedIndex].text;
+
+        // Ocultar inputs y volver a mostrar spans
+        nombreInput.style.display = 'none';
+        usuarioInput.style.display = 'none';
+        rolSelect.style.display = 'none';
+
+        spans.forEach(span => span.style.display = 'inline');
+
+        row.querySelector('#edit').style.display = 'inline';
+        row.querySelector('#save').style.display = 'none';
+        row.querySelector('#delete').style.display = 'inline';
+        row.querySelector('#cancel').style.display = 'none';
+      } else {
+        alert('Error al actualizar el empleado.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al actualizar el empleado.');
+    });
+  }
+
+    // Eliminar Empleado
+    function eliminarEmpleado(button) {
+      const id = button.getAttribute('data-id');
+      if (confirm('¿Estás seguro de eliminar este empleado?')) {
+
+        // Obtener CSRF token
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        fetch('/empleados/eliminar?id=' + encodeURIComponent(id), {
+          method: 'DELETE',
+          headers: {
+            [csrfHeader]: csrfToken
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            // Eliminar la fila del DOM
+            button.closest('tr').remove();
+          } else {
+            alert('Error al eliminar el empleado.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error al eliminar el empleado.');
+        });
+      }
+    }
+
+  // Cancelar la edición
+  function cancelarEdicion(button) {
+    const row = button.closest('tr');
+    row.querySelector('#edit').style.display = 'inline';
+    row.querySelector('#save').style.display = 'none';
+    row.querySelector('#delete').style.display = 'inline';
+    row.querySelector('#cancel').style.display = 'none';
+
+    row.querySelectorAll('input, select').forEach(elem => elem.style.display = 'none');
+    row.querySelectorAll('span').forEach(span => span.style.display = 'inline');
+  }
+</script>
 </html>

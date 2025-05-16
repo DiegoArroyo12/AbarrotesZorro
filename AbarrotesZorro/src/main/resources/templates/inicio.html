@@ -15,8 +15,8 @@
 
     <!-- Solo para Gerente -->
     <div class="sec" sec:authorize="hasAuthority('Gerente')">
-        <button th:onclick="'window.location.href=\'' + @{/} + '\''">Historial de Ventas</button>
-        <button onclick="">Empleados</button>
+        <button th:onclick="location.href='/historial_ventas'">Historial de Ventas</button>
+        <button th:onclick="'location.href=\'' + @{/empleados(idSucursal=${idSucursal})} + '\''">Empleados</button>
     </div>
 
     <!-- Para todos los usuarios autenticados -->

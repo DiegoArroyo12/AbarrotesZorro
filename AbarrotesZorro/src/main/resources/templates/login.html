@@ -30,7 +30,10 @@
         <button type="submit">Ingresar</button>
     </form>
     <div class="notification error" th:if="${param.error}">
-        Usuario o Contraseña Incorrectos
+        <span th:switch="${param.error[0]}">
+            <span th:case="'inactivo'">El empleado fue dado de baja</span>
+            <span th:case="*">Usuario o Contraseña Incorrectos</span>
+        </span>
     </div>
     <div class="notification logout" th:if="${param.logout}">
         Sesión Cerrada

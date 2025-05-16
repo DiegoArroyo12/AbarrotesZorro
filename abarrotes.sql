@@ -23,6 +23,7 @@ CREATE TABLE empleados (
 	usuario VARCHAR(25) NOT NULL UNIQUE,
 	password_hash VARCHAR(100) NOT NULL,
     id_sucursal INT NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
     FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal)
 );
 

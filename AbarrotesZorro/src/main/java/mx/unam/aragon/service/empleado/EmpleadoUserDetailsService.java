@@ -3,9 +3,9 @@ package mx.unam.aragon.service.empleado;
 import mx.unam.aragon.model.entity.EmpleadoEntity;
 import mx.unam.aragon.repository.EmpleadoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,8 +26,10 @@ public class EmpleadoUserDetailsService implements UserDetailsService {
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        empleado.getRoles().forEach(rol -> System.out.println("Rol asignado: " + rol.getNombre()));
-
+        // Verificar si el empleado está activo
+        if (!empleado.isActivo()) {
+            throw new BadCredentialsException("El empleado fue dado de baja");
+        }
 
         List<GrantedAuthority> authorities = empleado.getRoles().stream()
                 .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))

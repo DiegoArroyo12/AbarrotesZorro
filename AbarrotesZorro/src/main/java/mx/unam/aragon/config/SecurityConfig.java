@@ -1,6 +1,7 @@
 package mx.unam.aragon.config;
 
 import mx.unam.aragon.service.empleado.EmpleadoUserDetailsService;
+import mx.unam.aragon.util.CustomAuthFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,9 @@ public class SecurityConfig {
     @Autowired
     private EmpleadoUserDetailsService empleadoDetailsService;
 
+    @Autowired
+    private CustomAuthFailureHandler customAuthFailureHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -32,6 +36,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .failureHandler(customAuthFailureHandler)
                         .defaultSuccessUrl("/registrar-entrada", true)
                         .permitAll()
                 )
