@@ -299,12 +299,11 @@
             body: JSON.stringify(payload)
         })
             .then(response => response.text())
-            .then(html => {
-                const nuevaVentana = window.open("", "_blank");
-                nuevaVentana.document.write(html);
-                nuevaVentana.document.close();
+            .then(() => {
+                window.location.href = "/detalle-venta";
             })
-            .catch(err => {
+
+    .catch(err => {
                 console.error('Error al realizar compra:', err);
                 alert("Error al realizar la compra.");
             });

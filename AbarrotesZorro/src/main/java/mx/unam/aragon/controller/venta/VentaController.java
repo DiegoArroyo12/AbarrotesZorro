@@ -3,19 +3,28 @@ package mx.unam.aragon.controller.venta;
 import mx.unam.aragon.model.dto.ProductoVentaDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;
-
 @Controller
 public class VentaController {
 
+    private Map<String, Object> ultimaVenta;
+
     @PostMapping("/detalle-venta")
-    public String mostrarDetalleVenta(@RequestBody Map<String, Object> payload, Model model) {
-        // Extraemos la lista de productos
-        List<Map<String, Object>> productosMap = (List<Map<String, Object>>) payload.get("productos");
+    public String procesarDetalleVenta(@RequestBody Map<String, Object> payload) {
+        this.ultimaVenta = payload;
+        return "redirect:/detalle-venta";
+    }
+
+    @GetMapping("/detalle-venta")
+    public String mostrarDetalleVenta(Model model) {
+        if (ultimaVenta == null) return "redirect:/inicio"; // o a donde gustes
+
+        List<Map<String, Object>> productosMap = (List<Map<String, Object>>) ultimaVenta.get("productos");
 
         List<ProductoVentaDTO> productos = productosMap.stream().map(p -> {
             ProductoVentaDTO dto = new ProductoVentaDTO();
@@ -25,9 +34,9 @@ public class VentaController {
             return dto;
         }).toList();
 
-        String empleado = (String) payload.get("empleado");
-        String cliente = (String) payload.get("cliente");
-        String caja = (String) payload.get("caja");
+        String empleado = (String) ultimaVenta.get("empleado");
+        String cliente = (String) ultimaVenta.get("cliente");
+        String caja = (String) ultimaVenta.get("caja");
 
         double total = productos.stream()
                 .mapToDouble(p -> p.getPrecio() * p.getCantidad())
@@ -41,5 +50,4 @@ public class VentaController {
 
         return "detalleVenta";
     }
-
 }
