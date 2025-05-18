@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link th:href="@{/css/empleados.css}" rel="stylesheet">
+  <link rel="stylesheet" href="empleados.css">
+  <title>Accesos</title>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <h1>Accesos a <span th:text="${nombreSucursal}">Nombre Sucursal</span></h1>
+    <div class="acciones">
+      <button type="button"
+              th:attr="onclick=|window.location.href='/empleados?idSucursal=' + [[${idSucursal}]]|">
+        Volver
+      </button>
+    </div>
+  </header>
+
+  <section class="tabla-productos">
+    <table>
+      <thead>
+      <tr>
+        <th>Empleado</th>
+        <th>Caja</th>
+        <th>Entrada</th>
+        <th>Salida</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="acceso : ${accesos}">
+        <td th:text="${acceso.empleado.nombre}">Empleado</td>
+        <td><span th:text="${#strings.defaultString(acceso.caja?.nombre, 'Sin caja')}">Caja</span></td>
+        <td th:text="${#temporals.format(acceso.fechaEntrada, 'dd/MM/yyyy HH:mm:ss')}">Entrada</td>
+        <td th:text="${#temporals.format(acceso.fechaSalida, 'dd/MM/yyyy HH:mm:ss')}">Salida</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+</body>
+</html>
