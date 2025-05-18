@@ -1,27 +1,23 @@
 package mx.unam.aragon.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Entity(name= "clientes")
+@Entity
+@Table(name = "clientes")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ClienteEntity {
 
     @Id
-    @Column(name = "correo", nullable = false)
+    @Column(name = "correo")
     private String correo;
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
     @Column(name = "telefono")
     private String telefono;
-
-
 }

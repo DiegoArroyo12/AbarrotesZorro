@@ -7,6 +7,6 @@ import java.util.List;
 public interface VentaService {
     VentaEntity save(VentaEntity venta);
     List<VentaEntity> findAll();
-    void deleteById(Long id);
     VentaEntity findById(Long id);
+    void deleteById(Long id);
 }

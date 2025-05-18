@@ -1,38 +1,42 @@
 package mx.unam.aragon.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
-@Entity(name = "ventas")
+@Entity
+@Table(name = "ventas")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class VentaEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_venta")
     private Long id;
 
-    @Column(name = "correo_cliente")
-    private String correo_cliente;
+    @ManyToOne
+    @JoinColumn(name = "correo_cliente")
+    private ClienteEntity cliente;
 
     @ManyToOne
-    @JoinColumn(name = "id_empleado", nullable = false)
+    @JoinColumn(name = "id_empleado")
     private EmpleadoEntity empleado;
 
     @ManyToOne
     @JoinColumn(name = "id_caja")
     private CajaEntity caja;
 
-    @Column(name = "total")
+    @Column(name = "total", nullable = false)
     private Double total;
 
-    @Column(name = "fecha")
-    private LocalDate fecha;
+    @Column(name = "fecha", nullable = false)
+    private LocalDateTime fechaVenta;
+
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
+    private List<DetalleVentaEntity> detalles;
 }

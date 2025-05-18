@@ -7,36 +7,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VentaServiceImpl implements VentaService {
+
     @Autowired
-    VentaRepository ventaRepository;
+    private VentaRepository ventaRepository;
 
     @Override
     @Transactional
     public VentaEntity save(VentaEntity venta) {
-
         return ventaRepository.save(venta);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<VentaEntity> findAll() {
-
         return ventaRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public VentaEntity findById(Long id) {
+        return ventaRepository.findById(id).orElse(null);
     }
 
     @Override
     @Transactional
     public void deleteById(Long id) {
         ventaRepository.deleteById(id);
-    }
-
-    @Override
-    public VentaEntity findById(Long id) {
-        Optional<VentaEntity> op=ventaRepository.findById(id);
-        return op.orElse(null);
     }
 }

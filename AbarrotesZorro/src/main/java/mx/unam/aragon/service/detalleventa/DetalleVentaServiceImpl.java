@@ -7,23 +7,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DetalleVentaServiceImpl implements DetalleVentaService {
+
     @Autowired
-    DetalleVentaRepository detalleVentaRepository;
+    private DetalleVentaRepository detalleVentaRepository;
 
     @Override
     @Transactional
-    public DetalleVentaEntity save(DetalleVentaEntity detalle_venta) {
-        return detalleVentaRepository.save(detalle_venta);
+    public DetalleVentaEntity save(DetalleVentaEntity detalleVenta) {
+        return detalleVentaRepository.save(detalleVenta);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<DetalleVentaEntity> findAll() {
-
         return detalleVentaRepository.findAll();
     }
 
@@ -34,8 +33,8 @@ public class DetalleVentaServiceImpl implements DetalleVentaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DetalleVentaEntity findById(Long id) {
-        Optional<DetalleVentaEntity> op=detalleVentaRepository.findById(id);
-        return op.orElse(null);
+        return detalleVentaRepository.findById(id).orElse(null);
     }
 }
