@@ -31,8 +31,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/js/**", "/img/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/registro-acceso").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/venta/pdf").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/venta/pdf").permitAll()
                         .requestMatchers("/inicio", "/abarrotes/**", "/cliente/**", "/inventario").authenticated()
                         .anyRequest().authenticated()
+
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -41,6 +44,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(LogoutConfigurer::permitAll)
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/venta/pdf"))
                 .userDetailsService(empleadoDetailsService)
                 .build();
     }
