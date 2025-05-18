@@ -3,36 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Detalle de la Venta</title>
-    <link th:href="@{/css/detalleVenta.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/detalleVenta.css}">
 </head>
 <body>
 
-<h1>Detalle de la Venta</h1>
+<div class="sidebar">
+    <div class="cliente-info">
+        <h2>Empleado:</h2>
+        <p th:text="${empleado}">Nombre empleado</p>
 
-<p><strong>Empleado:</strong> <span th:text="${empleado}">Nombre empleado</span></p>
-<p><strong>Cliente:</strong> <span th:text="${cliente}">Nombre cliente</span></p>
-<p><strong>Caja:</strong> <span th:text="${caja}">Nombre caja</span></p>
+        <h3>Cliente:</h3>
+        <p th:text="${cliente}">Nombre cliente</p>
 
-<table>
-    <thead>
-    <tr>
-        <th>Producto</th>
-        <th>Cantidad</th>
-        <th>Precio unitario</th>
-        <th>Subtotal</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="p : ${productos}">
-        <td th:text="${p.nombre}"></td>
-        <td th:text="${p.cantidad}"></td>
-        <td th:text="${p.precio}"></td>
-        <td th:text="${p.precio * p.cantidad}"></td>
-    </tr>
-    </tbody>
-</table>
+        <h3>Caja:</h3>
+        <p th:text="${caja}">Caja</p>
+    </div>
 
-<h2 th:text="'Total: $' + ${total}"></h2>
+    <form method="post" action="/guardar-venta">
+        <button type="submit">Confirmar venta</button>
+    </form>
+</div>
+
+<div class="main-container">
+    <header class="detalle-header">
+        <span>Detalle de la Venta</span>
+    </header>
+
+    <div class="content-wrapper">
+        <section class="detalle-section">
+            <table>
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${productos}">
+                    <td th:text="${p.nombre}"></td>
+                    <td th:text="${p.cantidad}"></td>
+                    <td th:text="${p.precio}"></td>
+                    <td th:text="${p.precio * p.cantidad}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="total" th:text="'Total: $' + ${total}"></div>
+        </section>
+    </div>
+</div>
 
 </body>
 </html>
