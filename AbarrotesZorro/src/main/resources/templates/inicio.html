@@ -279,8 +279,18 @@
         }
 
         const nombreEmpleado = document.getElementById("empleado").value;
-        const nombreCliente = document.getElementById("nombreCliente").textContent || "Cliente genérico";
+        const nombreCliente = document.getElementById("nombreCliente").textContent.trim();
         const cajaSeleccionada = document.getElementById("cajaSeleccionada").value;
+
+        if (!nombreCliente || nombreCliente === "Nombre del Cliente") {
+            alert("Por favor, selecciona un cliente antes de continuar.");
+            return;
+        }
+
+        if (!cajaSeleccionada) {
+            alert("Por favor, selecciona una caja antes de continuar.");
+            return;
+        }
 
         const payload = {
             productos: productosCompra,
@@ -302,12 +312,12 @@
             .then(() => {
                 window.location.href = "/detalle-venta";
             })
-
-    .catch(err => {
+            .catch(err => {
                 console.error('Error al realizar compra:', err);
                 alert("Error al realizar la compra.");
             });
     }
+
 </script>
 </body>
 </html>

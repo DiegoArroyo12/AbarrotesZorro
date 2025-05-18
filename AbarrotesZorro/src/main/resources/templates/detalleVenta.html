@@ -18,9 +18,11 @@
         <h3>Caja:</h3>
         <p th:text="${caja}">Caja</p>
     </div>
-
     <form method="post" action="/guardar-venta">
         <button type="submit">Confirmar venta</button>
+    </form>
+    <form method="get" action="/inicio" style="margin-top: 10px;">
+        <button type="submit" >Cancelar</button>
     </form>
 </div>
 
