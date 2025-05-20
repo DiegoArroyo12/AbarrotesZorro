@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;
+
 @Controller
 public class VentaController {
 
@@ -22,7 +23,7 @@ public class VentaController {
 
     @GetMapping("/detalle-venta")
     public String mostrarDetalleVenta(Model model) {
-        if (ultimaVenta == null) return "redirect:/inicio"; // o a donde gustes
+        if (ultimaVenta == null) return "redirect:/inicio";
 
         List<Map<String, Object>> productosMap = (List<Map<String, Object>>) ultimaVenta.get("productos");
 
@@ -37,6 +38,7 @@ public class VentaController {
         String empleado = (String) ultimaVenta.get("empleado");
         String cliente = (String) ultimaVenta.get("cliente");
         String caja = (String) ultimaVenta.get("caja");
+        String hora = (String) ultimaVenta.get("hora"); // ✅ Agregamos la hora
 
         double total = productos.stream()
                 .mapToDouble(p -> p.getPrecio() * p.getCantidad())
@@ -47,6 +49,7 @@ public class VentaController {
         model.addAttribute("empleado", empleado);
         model.addAttribute("cliente", cliente);
         model.addAttribute("caja", caja);
+        model.addAttribute("hora", hora); // ✅ Agregamos la hora al modelo
 
         return "detalleVenta";
     }

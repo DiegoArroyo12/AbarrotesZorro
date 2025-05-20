@@ -17,10 +17,33 @@
 
         <h3>Caja:</h3>
         <p th:text="${caja}">Caja</p>
+
+        <h3>Sucursal: Central</h3>
+
+        <p><strong>Hora de la compra:</strong> <span th:text="${hora}">--:--</span></p>
+
     </div>
-    <form method="post" action="/guardar-venta">
+
+    <form method="POST" action="/venta/pdf">
+        <input type="hidden" name="cliente" th:value="${cliente}" />
+        <input type="hidden" name="empleado" th:value="${empleado}" />
+        <input type="hidden" name="caja" th:value="${caja}" />
+        <input type="hidden" name="sucursal" th:value="'Central'" />
+        <input type="hidden" name="hora" th:value="${hora}" />
+        <input type="hidden" name="total" th:value="${total}" />
+
+        <div th:each="p : ${productos}">
+            <input type="hidden" name="nombres[]" th:value="${p.nombre}" />
+            <input type="hidden" name="cantidades[]" th:value="${p.cantidad}" />
+            <input type="hidden" name="precios[]" th:value="${p.precio}" />
+        </div>
+
         <button type="submit">Confirmar venta</button>
     </form>
+
+
+
+
     <form method="get" action="/inicio" style="margin-top: 10px;">
         <button type="submit" >Cancelar</button>
     </form>
