@@ -1,11 +1,11 @@
 package mx.unam.aragon.view;
+
 import jakarta.servlet.http.HttpServletResponse;
 import mx.unam.aragon.model.dto.DetalleVentaDTO;
-import mx.unam.aragon.view.DetalleVentaPdfView;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +25,32 @@ public class VentaPdfController {
             @RequestParam("nombres[]") List<String> nombres,
             @RequestParam("cantidades[]") List<Integer> cantidades,
             @RequestParam("precios[]") List<Double> precios,
+            @RequestParam("imagenes[]") List<String> imagenes,
             HttpServletResponse response
     ) {
         List<DetalleVentaDTO> detalles = new ArrayList<>();
+
         for (int i = 0; i < nombres.size(); i++) {
-            detalles.add(new DetalleVentaDTO(nombres.get(i), cantidades.get(i), precios.get(i)));
+            String imagenRelativa = imagenes.get(i);
+
+            // Asegurar formato /img/productos/nombre.png
+            if (!imagenRelativa.startsWith("/")) {
+                imagenRelativa = "/" + imagenRelativa;
+            }
+
+            // Aquí NO se genera la ruta absoluta. Solo se guarda la ruta relativa
+            // que luego se resolverá dentro de DetalleVentaPdfView usando getResourceAsStream
+            DetalleVentaDTO dto = new DetalleVentaDTO(
+                    nombres.get(i),
+                    cantidades.get(i),
+                    precios.get(i),
+                    imagenRelativa
+            );
+
+            detalles.add(dto);
         }
 
+        // Descargar el PDF directamente
         response.setHeader("Content-Disposition", "attachment; filename=venta.pdf");
 
         ModelAndView mav = new ModelAndView(new DetalleVentaPdfView());
@@ -46,5 +65,4 @@ public class VentaPdfController {
 
         return mav;
     }
-
 }

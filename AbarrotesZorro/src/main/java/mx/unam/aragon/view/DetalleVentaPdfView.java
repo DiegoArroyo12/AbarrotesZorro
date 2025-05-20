@@ -7,6 +7,8 @@ import org.springframework.web.servlet.view.document.AbstractPdfView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -38,18 +40,41 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         document.add(new Paragraph(" "));
 
 
-        PdfPTable table = new PdfPTable(4);
+        PdfPTable table = new PdfPTable(5);
+        table.setWidths(new float[]{2,4,2,2,2});
+        table.setWidthPercentage(100);
+
+        table.addCell("Imagen");
         table.addCell("Producto");
         table.addCell("Cantidad");
         table.addCell("Precio");
         table.addCell("Subtotal");
 
         for (DetalleVentaDTO d : detalles) {
+            try {
+                // Leer imagen como recurso desde el classpath
+                InputStream is = getClass().getResourceAsStream("/static" + d.getImagen());
+
+                if (is != null) {
+                    Image img = Image.getInstance(is.readAllBytes());
+                    img.scaleAbsolute(40f, 40f);
+                    PdfPCell imgCell = new PdfPCell(img, true);
+                    imgCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    table.addCell(imgCell);
+                } else {
+                    table.addCell("Sin imagen");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                table.addCell("Sin imagen");
+            }
+
             table.addCell(d.getNombre());
             table.addCell(String.valueOf(d.getCantidad()));
             table.addCell(String.valueOf(d.getPrecio()));
             table.addCell(String.valueOf(d.getSubtotal()));
         }
+
 
         document.add(table);
         document.add(new Paragraph(" "));

@@ -5,11 +5,14 @@ public class DetalleVentaDTO {
     private String nombre;
     private int cantidad;
     private double precio;
+    private String imagen;
 
-    public DetalleVentaDTO(String nombre, int cantidad, double precio) {
+    //constructor
+    public DetalleVentaDTO(String nombre, int cantidad, double precio, String imagen) {
         this.nombre = nombre;
         this.cantidad = cantidad;
         this.precio = precio;
+        this.imagen = imagen;
     }
 
     public String getNombre() {
@@ -39,4 +42,7 @@ public class DetalleVentaDTO {
     public void setPrecio(double precio) {
         this.precio = precio;
     }
+
+    public String getImagen() { return imagen;}
+    public void setImagen(String imagen) { this.imagen = imagen; }
 }
