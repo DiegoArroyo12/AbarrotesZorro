@@ -25,8 +25,7 @@ public class ProductoEntity {
     private String nombre;
 
     @Column(name = "imagen")
-    @Lob
-    private Blob imagen;
+    private String  imagen;
 
     @Column(name ="precio")
     private Double precio;

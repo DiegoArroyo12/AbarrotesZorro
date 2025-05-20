@@ -4,19 +4,21 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link th:href="@{/css/inventario.css}" rel="stylesheet">
-  <link rel="stylesheet" href="inventario.css">
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+  <link th:href="@{/css/tablas.css}" rel="stylesheet">
   <title>Inventario</title>
 </head>
 <body>
-<div class="inventario-container">
-  <header class="inventario-header">
+<div class="container">
+  <header class="header">
     <h1>Inventario de la <span th:text="${nombreSucursal}">Nombre Sucursal</span></h1>
-    <div class="inventario-acciones">
+    <div class="acciones">
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
       <div sec:authorize="hasAuthority('Gerente')" class="buttons">
-        <button onclick="location.href='/inventario/nuevo-producto'">Agregar Producto</button>
-        <button onclick="location.href='/inventario/realizar-pedido'">Pedido a Proveedor</button>
+        <button th:onclick="'window.location.href=\'/inventario/nuevo?idSucursal=' + ${idSucursal} + '\''">Agregar Producto</button>
+        <button onclick="location.href='/inventario/pedido'">Pedido a Proveedor</button>
       </div>
     </div>
   </header>
@@ -29,18 +31,130 @@
         <th>Imagen</th>
         <th>Cantidad</th>
         <th>Precio</th>
+        <th sec:authorize="hasAuthority('Gerente')">Acciones</th>
       </tr>
       </thead>
       <tbody>
         <tr th:each="producto : ${productos}">
-          <td th:text="${producto.nombre}">Nombre</td>
-          <td><img th:src="@{${producto.imagen}}" alt="Imagen" style="width: 50px; height: auto;"></td>
-          <td th:text="${producto.stock}">Cantidad</td>
-          <td th:text="${producto.precio}">Precio</td>
+          <td>
+            <span th:text="${producto.nombre}">Nombre</span>
+            <input id="nombre" type="text" th:value="${producto.nombre}" style="display:none;">
+          </td>
+          <td>
+            <img th:src="${producto.imagen}" alt="Imagen">
+            <input id="imagen" type="file" accept="image/*" style="display:none;">
+          </td>
+          <td>
+            <span th:text="${producto.stock}">Stock</span>
+            <input id="stock" type="text" th:value="${producto.stock}" style="display:none;">
+          </td>
+          <td>
+            <span th:text="${producto.precio}">Precio</span>
+            <input id="precio" type="text" th:value="${producto.precio}" style="display:none;">
+          </td>
+          <td sec:authorize="hasAuthority('Gerente')">
+            <button id="edit" th:attr="data-id=${producto.id}" onclick="editarProducto(this)" class="btn-edit">Editar</button>
+            <button id="save" th:attr="data-id=${producto.id}" onclick="guardarProducto(this)" style="display:none;" class="btn-edit">Guardar</button>
+            <button id="delete" th:attr="data-id=${producto.id}" onclick="eliminarProducto(this)" class="btn-delete">Eliminar</button>
+            <button id="cancel" th:attr="data-id=${producto.id}" onclick="cancelarEdicion(this)" style="display:none;" class="btn-delete">Cancelar</button>
+          </td>
         </tr>
       </tbody>
     </table>
   </section>
 </div>
 </body>
+<script th:inline="javascript">
+  // Editar Producto
+  function editarProducto(button) {
+    const row = button.closest('tr');
+    row.querySelector('#edit').style.display = 'none';
+    row.querySelector('#save').style.display = 'inline';
+    row.querySelector('#delete').style.display = 'none';
+    row.querySelector('#cancel').style.display = 'inline';
+
+    row.querySelector('#nombre').style.display = 'inline';
+    row.querySelector('#stock').style.display = 'inline';
+    row.querySelector('#precio').style.display = 'inline';
+    row.querySelector('#imagen').style.display = 'inline';
+
+    row.querySelectorAll('span').forEach(span => span.style.display = 'none');
+    row.querySelectorAll('img').style.display = 'none';
+  }
+
+  // Guardar Cambios
+  function guardarProducto(button) {
+    const row = button.closest('tr');
+    const nombreInput = row.querySelector('#nombre');
+    const stockInput = row.querySelector('#stock');
+    const precioInput = row.querySelector('#precio');
+    const imagenInput = row.querySelector('#imagen');
+    const id = button.getAttribute('data-id');
+    const idSucursal = [[${idSucursal}]];
+
+    const formData = new FormData();
+    formData.append("id", id);
+    formData.append("nombre", nombreInput.value);
+    formData.append("stock", stockInput.value);
+    formData.append("precio", precioInput.value);
+    formData.append("idSucursal", idSucursal);
+    formData.append("imagen", imagenInput.files[0]);
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    fetch('/inventario/actualizar', {
+      method: 'POST',
+      headers: {
+        [csrfHeader]: csrfToken
+      },
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+    console.log(data);
+      if(data.status === 'ok') {
+        // Actualizar los spans con el nuevo valor
+        const spans = row.querySelectorAll('span');
+        spans[0].textContent = datos.nombre;
+        spans[1].textContent = datos.stock;
+        spans[2].textContent = datos.precio;
+
+        // Ocultar inputs y volver a mostrar spans
+        nombreInput.style.display = 'none';
+        stockInput.style.display = 'none';
+        precioInput.style.display = 'none';
+        imagenInput.style.display = 'none';
+
+        spans.forEach(span => span.style.display = 'inline');
+        if (data.nuevaImagen) {
+          row.querySelector('img').src = data.nuevaImagen;
+        }
+
+        row.querySelector('#edit').style.display = 'inline';
+        row.querySelector('#save').style.display = 'none';
+        row.querySelector('#delete').style.display = 'inline';
+        row.querySelector('#cancel').style.display = 'none';
+      } else {
+        alert(data.mensaje);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al actualizar el producto.');
+    });
+  }
+
+  // Cancelar Edición
+  function cancelarEdicion(button) {
+    const row = button.closest('tr');
+    row.querySelector('#edit').style.display = 'inline';
+    row.querySelector('#save').style.display = 'none';
+    row.querySelector('#delete').style.display = 'inline';
+    row.querySelector('#cancel').style.display = 'none';
+
+    row.querySelectorAll('input, select').forEach(elem => elem.style.display = 'none');
+    row.querySelectorAll('span').forEach(span => span.style.display = 'inline');
+  }
+</script>
 </html>

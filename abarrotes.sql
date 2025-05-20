@@ -27,6 +27,7 @@ CREATE TABLE empleados (
     FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal)
 );
 
+-- Contraseña de ambos perfiles 1234
 INSERT INTO empleados VALUES (1, 'Diego Arroyo', 'darroyo', '$2a$10$aCKzZl3s3tWZzUf3gYxQeeMKwZA.2IkdiPWxV0yGnZK92pNRp5oFe', 1, true), (2, 'Salma Navarro', 'snavarro', '$2a$10$/xTJg2Yjws5JOEOfivKAOuHg1IoY4MaU01S6gAVq8GZG/XsEkgKRS', 1, true);
 
 -- Roles
@@ -81,33 +82,33 @@ DROP TABLE IF EXISTS productos;
 CREATE TABLE productos (
 	id_producto INT PRIMARY KEY AUTO_INCREMENT,
 	nombre VARCHAR(100) NOT NULL,
-	imagen VARCHAR(255), -- guarda ruta de imagen o base64
+	imagen VARCHAR(255),
 	precio DOUBLE NOT NULL
 );
 
 INSERT INTO productos (nombre, imagen, precio) VALUES
-('Arroz 1kg', NULL, 22.50),
-('Frijol negro 1kg', NULL, 28.00),
-('Aceite vegetal 1L', NULL, 45.90),
-('Harina de trigo 1kg', NULL, 19.75),
-('Azúcar 1kg', NULL, 23.20),
-('Sal yodada 500g', NULL, 8.50),
-('Leche entera 1L', NULL, 18.90),
-('Huevos 12 piezas', NULL, 36.00),
-('Pan de caja integral', NULL, 34.75),
-('Mantequilla 250g', NULL, 31.00),
-('Queso manchego 200g', NULL, 42.50),
-('Jamón de pierna 250g', NULL, 39.99),
-('Café soluble 100g', NULL, 55.00),
-('Té de manzanilla 25 sobres', NULL, 24.00),
-('Agua embotellada 1.5L', NULL, 13.25),
-('Refresco cola 2L', NULL, 29.90),
-('Papel higiénico 4 rollos', NULL, 33.50),
-('Shampoo 750ml', NULL, 59.00),
-('Detergente en polvo 1kg', NULL, 37.25),
-('Jabón de baño 3 piezas', NULL, 21.75);
+('Arroz 1kg', '/img/productos/arroz.png', 22.50),
+('Frijol negro 1kg', '/img/productos/frijol_negro.png', 28.00),
+('Aceite vegetal 1L', '/img/productos/aceite_vegetal.png', 45.90),
+('Harina de trigo 1kg', '/img/productos/harina_trigo.png', 19.75),
+('Azúcar 1kg', '/img/productos/azucar.png', 23.20),
+('Sal yodada 500g', '/img/productos/sal_yodada.png', 8.50),
+('Leche entera 1L', '/img/productos/leche_entera.png', 18.90),
+('Huevos 12 piezas', '/img/productos/huevos.png', 36.00),
+('Pan de caja integral', '/img/productos/pan_integral.png', 34.75),
+('Mantequilla 250g', '/img/productos/mantequilla.png', 31.00),
+('Queso manchego 200g', '/img/productos/queso_manchego.png', 42.50),
+('Jamón de pierna 250g', '/img/productos/jamon_pierna.png', 39.99),
+('Café soluble 100g', '/img/productos/cafe.png', 55.00),
+('Té de manzanilla 25 sobres', '/img/productos/te_manzanilla.png', 24.00),
+('Agua embotellada 1.5L', '/img/productos/agua.png', 13.25),
+('Refresco cola 2L', '/img/productos/refresco.png', 29.90),
+('Papel higiénico 4 rollos', '/img/productos/papel_higienico.png', 33.50),
+('Shampoo 750ml', '/img/productos/shampoo.png', 59.00),
+('Detergente en polvo 1kg', '/img/productos/detergente.png', 37.25),
+('Jabón de baño 3 piezas', '/img/productos/jabon_bano.png', 21.75);
 
--- Inventario por almacén
+-- Inventario por sucursal
 DROP TABLE IF EXISTS inventarios;
 CREATE TABLE inventarios (
 	id_producto INT NOT NULL,

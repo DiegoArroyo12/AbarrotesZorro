@@ -153,6 +153,11 @@ h4 {
     margin: .5rem 0;
 }
 
+.producto img {
+    width: 5rem;
+    height: auto;
+}
+
 .cantidad-control {
     display: flex;
     justify-content: space-around;

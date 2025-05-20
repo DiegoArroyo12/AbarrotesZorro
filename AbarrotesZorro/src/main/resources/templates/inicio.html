@@ -83,6 +83,7 @@
     <div class="productos">
         <!-- Plantilla para productos -->
         <div class="producto template" style="display: none;">
+            <img class="imagen-producto" src="" alt="Imagen del producto">
             <p class="nombre-producto">Nombre</p>
             <div class="precio-producto">$0</div>
             <div class="cantidad-control">
@@ -122,7 +123,8 @@
                     productos.push({
                         nombre: p.nombre,
                         precio: p.precio,
-                        stock: p.stock
+                        stock: p.stock,
+                        imagen: p.imagen
                     });
                 });
                 crearProductos();
@@ -168,6 +170,7 @@
             clon.querySelector(".nombre-producto").textContent = producto.nombre;
             clon.querySelector(".precio-producto").textContent = `$${producto.precio}`;
             clon.querySelector(".stock").textContent = producto.stock;
+            clon.querySelector(".imagen-producto").src = producto.imagen;
             const cantidadSpan = clon.querySelector(".cantidad");
 
             clon.querySelector(".mas").addEventListener("click", () => {
