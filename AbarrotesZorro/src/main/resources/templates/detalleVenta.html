@@ -17,12 +17,19 @@
 
         <h3>Caja:</h3>
         <p th:text="${caja}">Caja</p>
+
+        <h3>Sucursal: Central</h3>
+
+        <p><strong>Hora de la compra:</strong> <span th:text="${hora}">--:--</span></p>
+
     </div>
 
     <form method="POST" action="/venta/pdf">
         <input type="hidden" name="cliente" th:value="${cliente}" />
         <input type="hidden" name="empleado" th:value="${empleado}" />
         <input type="hidden" name="caja" th:value="${caja}" />
+        <input type="hidden" name="sucursal" th:value="'Central'" />
+        <input type="hidden" name="hora" th:value="${hora}" />
         <input type="hidden" name="total" th:value="${total}" />
 
         <div th:each="p : ${productos}">

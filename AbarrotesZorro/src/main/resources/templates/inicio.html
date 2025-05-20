@@ -292,12 +292,16 @@
             return;
         }
 
+        const horaActual = new Date().toLocaleTimeString('es-MX', { hour12: false });
+
         const payload = {
             productos: productosCompra,
             empleado: nombreEmpleado,
             cliente: nombreCliente,
-            caja: cajaSeleccionada
+            caja: cajaSeleccionada,
+            hora: horaActual
         };
+
 
         fetch('/detalle-venta', {
             method: 'POST',

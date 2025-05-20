@@ -18,6 +18,8 @@ public class VentaPdfController {
             @RequestParam String cliente,
             @RequestParam String empleado,
             @RequestParam String caja,
+            @RequestParam String sucursal,
+            @RequestParam String hora,
             @RequestParam double total,
             @RequestParam("nombres[]") List<String> nombres,
             @RequestParam("cantidades[]") List<Integer> cantidades,
@@ -29,16 +31,18 @@ public class VentaPdfController {
             detalles.add(new DetalleVentaDTO(nombres.get(i), cantidades.get(i), precios.get(i)));
         }
 
-        // Esto hace que el navegador descargue el PDF en vez de abrirlo
         response.setHeader("Content-Disposition", "attachment; filename=venta.pdf");
 
         ModelAndView mav = new ModelAndView(new DetalleVentaPdfView());
         mav.addObject("cliente", cliente);
         mav.addObject("empleado", empleado);
         mav.addObject("caja", caja);
+        mav.addObject("sucursal", sucursal);  // ✅ nuevo
+        mav.addObject("hora", hora);          // ✅ nuevo
         mav.addObject("detalles", detalles);
         mav.addObject("total", total);
 
         return mav;
     }
+
 }
