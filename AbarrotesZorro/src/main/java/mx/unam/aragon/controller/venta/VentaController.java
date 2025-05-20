@@ -38,7 +38,8 @@ public class VentaController {
         String empleado = (String) ultimaVenta.get("empleado");
         String cliente = (String) ultimaVenta.get("cliente");
         String caja = (String) ultimaVenta.get("caja");
-        String hora = (String) ultimaVenta.get("hora"); // ✅ Agregamos la hora
+        String hora = (String) ultimaVenta.get("hora");
+        String fecha = (String) ultimaVenta.get("fecha");
 
         double total = productos.stream()
                 .mapToDouble(p -> p.getPrecio() * p.getCantidad())
@@ -49,7 +50,8 @@ public class VentaController {
         model.addAttribute("empleado", empleado);
         model.addAttribute("cliente", cliente);
         model.addAttribute("caja", caja);
-        model.addAttribute("hora", hora); // ✅ Agregamos la hora al modelo
+        model.addAttribute("hora", hora);
+        model.addAttribute("fecha", fecha);
 
         return "detalleVenta";
     }

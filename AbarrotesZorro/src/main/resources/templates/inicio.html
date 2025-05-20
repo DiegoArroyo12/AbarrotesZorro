@@ -296,13 +296,15 @@
         }
 
         const horaActual = new Date().toLocaleTimeString('es-MX', { hour12: false });
+        const fechaActual = new Date().toLocaleDateString('es-MX');
 
         const payload = {
             productos: productosCompra,
             empleado: nombreEmpleado,
             cliente: nombreCliente,
             caja: cajaSeleccionada,
-            hora: horaActual
+            hora: horaActual,
+            fecha: fechaActual
         };
 
 

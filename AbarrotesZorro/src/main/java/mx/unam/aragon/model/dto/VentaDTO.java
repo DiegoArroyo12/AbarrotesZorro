@@ -8,8 +8,7 @@ public class VentaDTO {
     private String cliente;
     private String caja;
     private String hora;
-
-
+    private String fecha;
 
     public List<ProductoVentaDTO> getProductos() {
         return productos;
@@ -50,4 +49,11 @@ public class VentaDTO {
     public void setHora(String hora) {
         this.hora = hora;
     }
+    public String getFecha() {
+        return fecha;
+    }
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
+
 }

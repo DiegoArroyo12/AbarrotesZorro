@@ -19,6 +19,7 @@ public class VentaPdfController {
             @RequestParam String empleado,
             @RequestParam String caja,
             @RequestParam String sucursal,
+            @RequestParam String fecha,
             @RequestParam String hora,
             @RequestParam double total,
             @RequestParam("nombres[]") List<String> nombres,
@@ -37,8 +38,9 @@ public class VentaPdfController {
         mav.addObject("cliente", cliente);
         mav.addObject("empleado", empleado);
         mav.addObject("caja", caja);
-        mav.addObject("sucursal", sucursal);  // ✅ nuevo
-        mav.addObject("hora", hora);          // ✅ nuevo
+        mav.addObject("sucursal", sucursal);
+        mav.addObject("fecha", fecha);
+        mav.addObject("hora", hora);
         mav.addObject("detalles", detalles);
         mav.addObject("total", total);
 

@@ -18,7 +18,10 @@
         <h3>Caja:</h3>
         <p th:text="${caja}">Caja</p>
 
-        <h3>Sucursal: Central</h3>
+        <h3>Sucursal:</h3>
+        <p>Sucursal Central</p>
+
+        <p><strong>Fecha de la compra:</strong> <span th:text="${fecha}">dd/mm/aaaa</span></p>
 
         <p><strong>Hora de la compra:</strong> <span th:text="${hora}">--:--</span></p>
 
@@ -28,7 +31,8 @@
         <input type="hidden" name="cliente" th:value="${cliente}" />
         <input type="hidden" name="empleado" th:value="${empleado}" />
         <input type="hidden" name="caja" th:value="${caja}" />
-        <input type="hidden" name="sucursal" th:value="'Central'" />
+        <input type="hidden" name="sucursal" th:value="'Sucursal Central'" />
+        <input type="hidden" name="fecha" th:value="${fecha}" />
         <input type="hidden" name="hora" th:value="${hora}" />
         <input type="hidden" name="total" th:value="${total}" />
 

@@ -22,6 +22,7 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         String cliente = (String) model.get("cliente");
         String empleado = (String) model.get("empleado");
         String sucursal = (String) model.get("sucursal");
+        String fecha = (String) model.get("fecha");
         String hora = (String) model.get("hora");
         String caja = (String) model.get("caja");
         Double total = (Double) model.get("total");
@@ -31,8 +32,9 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         document.add(new Paragraph("Cliente: " + cliente));
         document.add(new Paragraph("Empleado: " + empleado));
         document.add(new Paragraph("Caja: " + caja));
-        document.add(new Paragraph("Sucursal: " + sucursal)); // ✅ nuevo
-        document.add(new Paragraph("Hora de la compra: " + hora)); // ✅ nuevo
+        document.add(new Paragraph("Sucursal: " + sucursal));
+        document.add(new Paragraph("Fecha: " + fecha));
+        document.add(new Paragraph("Hora de la compra: " + hora));
         document.add(new Paragraph(" "));
 
 
