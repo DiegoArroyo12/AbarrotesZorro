@@ -63,6 +63,7 @@
             <table>
                 <thead>
                 <tr>
+                    <th>Imagen</th>
                     <th>Producto</th>
                     <th>Cantidad</th>
                     <th>Precio unitario</th>
@@ -71,6 +72,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="p : ${productos}">
+                    <td><img th:src="${p.imagen}" alt="imagen" width="50"/></td>
                     <td th:text="${p.nombre}"></td>
                     <td th:text="${p.cantidad}"></td>
                     <td th:text="${p.precio}"></td>

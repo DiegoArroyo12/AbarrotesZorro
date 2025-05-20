@@ -273,7 +273,8 @@
         const productosCompra = productos.map((producto, i) => ({
             nombre: producto.nombre,
             precio: producto.precio,
-            cantidad: cantidades[i]
+            cantidad: cantidades[i],
+            imagen: producto.imagen
         })).filter(p => p.cantidad > 0);
 
         if (productosCompra.length === 0) {

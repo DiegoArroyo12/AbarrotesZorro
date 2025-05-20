@@ -32,6 +32,7 @@ public class VentaController {
             dto.setNombre((String) p.get("nombre"));
             dto.setPrecio(Double.parseDouble(p.get("precio").toString()));
             dto.setCantidad((Integer) p.get("cantidad"));
+            dto.setImagen((String) p.get("imagen"));
             return dto;
         }).toList();
 

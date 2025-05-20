@@ -4,8 +4,8 @@ public class ProductoVentaDTO {
     private String nombre;
     private double precio;
     private int cantidad;
+    private String imagen;
 
-    // Getters y Setters
     public String getNombre() {
         return nombre;
     }
@@ -24,4 +24,6 @@ public class ProductoVentaDTO {
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
+    public String getImagen() { return imagen; }
+    public void setImagen(String imagen) { this.imagen = imagen; }
 }
