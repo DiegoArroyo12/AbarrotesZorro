@@ -10,4 +10,5 @@ public interface EmpleadoRepository extends JpaRepository<EmpleadoEntity,Long> {
     Optional<EmpleadoEntity> findByUsuario(String usuario);
 
     List<EmpleadoEntity> findBySucursalIdAndActivoTrue(Integer idSucursal);
+
 }

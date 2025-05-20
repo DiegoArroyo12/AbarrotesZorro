@@ -54,6 +54,7 @@ public class InicioController {
             ClienteEntity cliente = clienteService.findByCorreo(correo);
             if (cliente != null) {
                 model.addAttribute("nombreCliente", cliente.getNombre());
+
             }
         }
 
@@ -68,6 +69,7 @@ public class InicioController {
 
         // Datos del Empleado
         model.addAttribute("nombreEmpleado", empleado.getNombre());
+        model.addAttribute("idEmpleado", empleado.getId());
         model.addAttribute("nombreSucursal", empleado.getSucursal().getNombre());
         model.addAttribute("idSucursal", empleado.getSucursal().getId());
 

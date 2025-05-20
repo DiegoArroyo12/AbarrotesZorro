@@ -39,9 +39,8 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         document.add(new Paragraph("Hora de la compra: " + hora));
         document.add(new Paragraph(" "));
 
-
         PdfPTable table = new PdfPTable(5);
-        table.setWidths(new float[]{2,4,2,2,2});
+        table.setWidths(new float[]{2, 4, 2, 2, 2});
         table.setWidthPercentage(100);
 
         table.addCell("Imagen");
@@ -52,8 +51,11 @@ public class DetalleVentaPdfView extends AbstractPdfView {
 
         for (DetalleVentaDTO d : detalles) {
             try {
-                // Leer imagen como recurso desde el classpath
                 InputStream is = getClass().getResourceAsStream("/static" + d.getImagen());
+                if (is == null) {
+                    // Imagen por defecto si no se encuentra
+                    is = getClass().getResourceAsStream("/static/img/default.jpg");
+                }
 
                 if (is != null) {
                     Image img = Image.getInstance(is.readAllBytes());
@@ -66,18 +68,17 @@ public class DetalleVentaPdfView extends AbstractPdfView {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                table.addCell("Sin imagen");
+                table.addCell("Error imagen");
             }
 
             table.addCell(d.getNombre());
             table.addCell(String.valueOf(d.getCantidad()));
-            table.addCell(String.valueOf(d.getPrecio()));
-            table.addCell(String.valueOf(d.getSubtotal()));
+            table.addCell(String.format("$%.2f", d.getPrecio()));
+            table.addCell(String.format("$%.2f", d.getSubtotal()));
         }
-
 
         document.add(table);
         document.add(new Paragraph(" "));
-        document.add(new Paragraph("Total: $" + total));
+        document.add(new Paragraph("Total: $" + String.format("%.2f", total)));
     }
 }

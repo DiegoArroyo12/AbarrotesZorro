@@ -10,13 +10,13 @@
 <div class="sidebar">
     <div class="cliente-info">
         <h2>Empleado:</h2>
-        <p th:text="${empleado}">Nombre empleado</p>
+        <p th:text="${empleadoNombre}">Nombre empleado</p>
 
         <h3>Cliente:</h3>
-        <p th:text="${cliente}">Nombre cliente</p>
+        <p th:text="${clienteNombre}">Nombre cliente</p>
 
         <h3>Caja:</h3>
-        <p th:text="${caja}">Caja</p>
+        <p th:text="${cajaNombre}">Caja</p>
 
         <h3>Sucursal:</h3>
         <p>Sucursal Central</p>
@@ -24,13 +24,13 @@
         <p><strong>Fecha de la compra:</strong> <span th:text="${fecha}">dd/mm/aaaa</span></p>
 
         <p><strong>Hora de la compra:</strong> <span th:text="${hora}">--:--</span></p>
-
     </div>
 
     <form method="POST" action="/venta/pdf">
-        <input type="hidden" name="cliente" th:value="${cliente}" />
-        <input type="hidden" name="empleado" th:value="${empleado}" />
-        <input type="hidden" name="caja" th:value="${caja}" />
+        <input type="hidden" name="cliente" th:value="${clienteId}" />
+        <input type="hidden" name="empleado" th:value="${idEmpleado}" />
+        <input type="hidden" name="caja" th:value="${cajaId}" />
+
         <input type="hidden" name="sucursal" th:value="'Sucursal Central'" />
         <input type="hidden" name="fecha" th:value="${fecha}" />
         <input type="hidden" name="hora" th:value="${hora}" />
@@ -46,11 +46,8 @@
         <button type="submit">Confirmar venta</button>
     </form>
 
-
-
-
     <form method="get" action="/inicio" style="margin-top: 10px;">
-        <button type="submit" >Cancelar</button>
+        <button type="submit">Cancelar</button>
     </form>
 </div>
 
@@ -81,7 +78,6 @@
                 </tr>
                 </tbody>
             </table>
-
             <div class="total" th:text="'Total: $' + ${total}"></div>
         </section>
     </div>
