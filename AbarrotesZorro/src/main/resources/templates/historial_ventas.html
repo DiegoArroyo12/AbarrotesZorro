@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <link th:href="@{/css/tablas.css}" rel="stylesheet">
+  <title>Historial de Ventas</title>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <h1>Historial Ventas de <span th:text="${nombreSucursal}">Nombre Sucursal</span></h1>
+    <div class="acciones">
+      <button onclick="location.href='/inicio'">Volver a Inicio</button>
+    </div>
+  </header>
+
+  <section class="tabla-productos">
+    <table>
+      <thead>
+      <tr>
+        <th>ID Venta</th>
+        <th>Cliente</th>
+        <th>Empleado</th>
+        <th>Sucursal</th>
+        <th>Caja</th>
+        <th>Total</th>
+        <th>Fecha</th>
+        <th>Detalles</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="venta : ${ventas}">
+        <td th:text="${venta.idVenta}"></td>
+        <td th:text="${venta.cliente}"></td>
+        <td th:text="${venta.empleado}"></td>
+        <td th:text="${venta.sucursal}"></td>
+        <td th:text="${venta.caja}"></td>
+        <td th:text="${venta.total}"></td>
+        <td th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm:ss')}"></td>
+        <td>
+          <button th:attr="onclick=|window.location.href='/ventas/detalles?id=${venta.idVenta}&idSucursal=${idSucursal}'|" class="btn-delete">Ver Detalles</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+</body>
+</html>

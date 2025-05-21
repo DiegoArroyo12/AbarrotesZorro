@@ -75,12 +75,18 @@ a {
 }
 
 .btn-edit {
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
     padding: 0.5rem;
     border-radius: 1rem;
     background-color: #808182;
 }
 
 .btn-delete {
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
     padding: 0.5rem;
     border-radius: 1rem;
     background-color: #d22230;

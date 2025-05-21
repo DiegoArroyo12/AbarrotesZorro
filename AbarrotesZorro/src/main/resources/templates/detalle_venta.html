@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <link th:href="@{/css/tablas.css}" rel="stylesheet">
+  <title>Detalle de Venta</title>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <h2>Detalles de Venta #[[${venta.idVenta}]]</h2>
+    <div class="acciones">
+      <button class="btn-volver" th:attr="data-idSucursal=${idSucursal}">
+        Volver a Ventas
+      </button>
+    </div>
+  </header>
+
+  <section class="tabla-productos">
+    <p><strong>Cliente:</strong> [[${venta.cliente}]]</p>
+    <p><strong>Empleado:</strong> [[${venta.empleado}]]</p>
+    <p><strong>Sucursal:</strong> [[${venta.sucursal}]]</p>
+    <p><strong>Fecha:</strong> [[${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm:ss')}]]</p>
+    <p><strong>Total de la Venta:</strong> $[[${#numbers.formatDecimal(venta.total, 0, 'COMMA', 2, 'POINT')}]]</p>
+
+    <table>
+      <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario</th>
+        <th>Subtotal</th>
+        <th>Acción</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="detalle : ${detalles}">
+        <td th:text="${detalle.nombre}"></td>
+        <td th:text="${detalle.cantidad}"></td>
+        <td th:text="${detalle.precio}"></td>
+        <td th:text="${#numbers.formatDecimal(detalle.cantidad * detalle.precio, 0, 'COMMA', 2, 'POINT')}"></td>
+        <td>
+          <button th:onclick="'agregarAPedido(' + ${detalle.idDetalle} + ')'" class="btn-delete">Agregar a Pedido</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+</body>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const btnVolver = document.querySelector(".btn-volver");
+    if (btnVolver) {
+      btnVolver.addEventListener("click", () => {
+        const id = btnVolver.getAttribute("data-idSucursal");
+        window.location.href = `/historial-ventas?idSucursal=${id}`;
+      });
+    }
+  });
+</script>
+</html>

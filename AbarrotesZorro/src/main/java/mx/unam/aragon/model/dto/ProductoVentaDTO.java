@@ -5,6 +5,19 @@ public class ProductoVentaDTO {
     private double precio;
     private int cantidad;
     private String imagen;
+    private Long idDetalle;
+
+    public ProductoVentaDTO() {
+
+    }
+
+    public ProductoVentaDTO(String nombre, double precio, int cantidad, String imagen, Long idDetalle) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.cantidad = cantidad;
+        this.imagen = imagen;
+        this.idDetalle = idDetalle;
+    }
 
     public String getNombre() {
         return nombre;
@@ -26,4 +39,6 @@ public class ProductoVentaDTO {
     }
     public String getImagen() { return imagen; }
     public void setImagen(String imagen) { this.imagen = imagen; }
+    public Long getIdDetalle() { return idDetalle; }
+    public void setIdDetalle(Long idDetalle) { this.idDetalle = idDetalle; }
 }
