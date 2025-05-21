@@ -100,7 +100,7 @@ public class VentaPdfController {
         // Modelo para el PDF y correo
         Map<String, Object> model = new HashMap<>();
         model.put("cliente", clienteEntity.map(ClienteEntity::getNombre).orElse("Desconocido"));
-        model.put("empleado", empleado);
+        model.put("empleado", empleadoEntity.map(EmpleadoEntity::getNombre).orElse("Desconocido"));
         model.put("caja", caja);
         model.put("sucursal", sucursal);
         model.put("fecha", fecha);

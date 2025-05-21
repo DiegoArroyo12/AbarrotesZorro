@@ -100,7 +100,6 @@
 <div class="carrito">
     <h1>Carrito</h1>
     <ul>
-        <!-- Se insertan los productos con JS -->
     </ul>
     <div class="total">Total: $0</div>
     <button class="realizar-compra" onclick="realizarCompra()">Realizar</button>
@@ -212,7 +211,6 @@
             .then(data => {
                 document.getElementById('nombreCliente').textContent = data.nombre;
                 document.getElementById('idCliente').value = data.correo;
-                console.log("Respuesta completa del servidor:", data);
             })
             .catch(error => {
                 console.error(error);
