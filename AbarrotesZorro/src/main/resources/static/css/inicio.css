@@ -206,3 +206,14 @@ button {
     font-weight: bold;
     font-size: 1.2rem;
 }
+.limpiar-carrito{
+    margin-top: 1rem;
+    width: 100%;
+    padding: 1rem;
+    background-color: rgb(216, 42, 42);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2rem;
+}

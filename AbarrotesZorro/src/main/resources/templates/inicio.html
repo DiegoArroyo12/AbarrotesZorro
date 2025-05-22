@@ -71,7 +71,7 @@
         </div>
         <div>
             <h2>Caja</h2>
-            <select name="cajaSeleccionada" id="cajaSeleccionada" class="form-control" onchange="registrarAccesoCaja()">
+            <select name="cajaSeleccionada" id="cajaSeleccionada" class="form-control" onchange="registrarAccesoCaja(); guardarCajaLocalStorage(this.value)">
                 <option value="" selected>Seleccione una caja</option>
                 <option th:each="caja : ${cajas}"
                         th:value="${caja.id}"
@@ -103,6 +103,7 @@
     </ul>
     <div class="total">Total: $0</div>
     <button class="realizar-compra" onclick="realizarCompra()">Realizar</button>
+    <button class="limpiar-carrito" onclick="limpiarCarrito()">Borrar</button>
 </div>
 
 <input type="hidden" id="empleado" th:value="${idEmpleado}">
@@ -113,6 +114,11 @@
 <script th:inline="javascript">
     window.addEventListener("DOMContentLoaded", () => {
         const idSucursal = [[${idSucursal}]];
+        const cajaGuardada = localStorage.getItem("cajaSeleccionada");
+        const selectCaja = document.getElementById("cajaSeleccionada");
+        if (cajaGuardada && selectCaja) {
+            selectCaja.value = cajaGuardada;
+        }
         console.log(idSucursal);
         productos.length = 0;
         cantidades.length = 0;
@@ -336,6 +342,24 @@
                 console.error('Error al realizar compra:', err);
                 alert("Error al realizar la compra.");
             });
+    }
+    function limpiarCarrito() {
+        for (let i = 0; i < cantidades.length; i++) {
+            cantidades[i] = 0;
+        }
+
+        actualizarCarrito();
+
+        document.getElementById('nombreCliente').textContent = '';
+        document.getElementById('correo').value = '';
+        document.getElementById('telefono').value = '';
+        document.getElementById('idCliente').value = '';
+
+        const cantidadSpans = document.querySelectorAll(".cantidad");
+        cantidadSpans.forEach(span => span.textContent = '0');
+    }
+    function guardarCajaLocalStorage(idCaja) {
+        localStorage.setItem("cajaSeleccionada", idCaja);
     }
 
 </script>
