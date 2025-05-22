@@ -18,7 +18,7 @@
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
       <button onclick="location.href='/inventario/realizar-pedido'" sec:authorize="hasAuthority('Gerente')">Pedido a Proveedor</button>
       <button th:onclick="'window.location.href=\'/inventario/nuevo?idSucursal=' + ${idSucursal} + '\''" sec:authorize="hasAuthority('Gerente')">Agregar Producto</button>
-      <button onclick="" sec:authorize="hasAuthority('Gerente')">Descargar Excel</button>
+      <button th:onclick="'location.href=\'/inventario/descargar-excel?idSucursal=' + ${idSucursal} + '\''"  sec:authorize="hasAuthority('Gerente')">Descargar Inventario</button>
     </div>
   </header>
 
@@ -89,7 +89,7 @@
     const precioInput = row.querySelector('#precio');
     const imagenInput = row.querySelector('#imagen');
     const id = button.getAttribute('data-id');
-    const idSucursal = [[${idSucursal}]];
+    const idSucursal = [[$,{idSucursal}]];
 
     const formData = new FormData();
     formData.append("id", id);

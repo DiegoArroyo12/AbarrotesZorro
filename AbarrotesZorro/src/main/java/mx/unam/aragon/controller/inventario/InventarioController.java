@@ -1,14 +1,18 @@
 package mx.unam.aragon.controller.inventario;
 
 import jakarta.validation.Valid;
+import mx.unam.aragon.model.entity.EmpleadoEntity;
 import mx.unam.aragon.model.entity.InventarioEntity;
 import mx.unam.aragon.model.entity.ProductoEntity;
 import mx.unam.aragon.model.entity.SucursalEntity;
 import mx.unam.aragon.model.entity.seriales.IdInventario;
 import mx.unam.aragon.model.entity.view.ProductoInventarioView;
+import mx.unam.aragon.repository.EmpleadoRepository;
 import mx.unam.aragon.repository.ProductoRepository;
 import mx.unam.aragon.repository.SucursalRepository;
 import mx.unam.aragon.repository.InventarioRepository;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -17,8 +21,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.core.Authentication;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +48,10 @@ public class InventarioController {
 
     @Autowired
     ProductoRepository productoRepository;
+
+    @Autowired
+    EmpleadoRepository empleadoRepository;
+
 
     @Value("${imagenes.ruta}")
     private String imagenesPath;
@@ -78,7 +92,6 @@ public class InventarioController {
             return "nuevo_producto";
         }
         try {
-            // Guardar imagen si fue subida
             if (archivoImagen != null && !archivoImagen.isEmpty()) {
                 String nombreArchivo = UUID.randomUUID() + "_" + archivoImagen.getOriginalFilename();
                 Path ruta = Paths.get(imagenesPath, nombreArchivo);
@@ -86,10 +99,8 @@ public class InventarioController {
                 producto.setImagen("/img/productos/" + nombreArchivo);
             }
 
-            // Guardar producto
             ProductoEntity productoGuardado = productoRepository.save(producto);
 
-            // Crear y guardar inventario
             InventarioEntity inventario = new InventarioEntity();
             IdInventario idInventario = new IdInventario(productoGuardado.getId(), Long.valueOf(idSucursal));
             inventario.setId(idInventario);
@@ -98,7 +109,6 @@ public class InventarioController {
             inventario.setStock(stock);
             inventarioRepository.save(inventario);
 
-            // Guardar en las demás sucursales con stock 0
             List<SucursalEntity> otrasSucursales = sucursalRepository.findAll()
                     .stream()
                     .filter(s -> !s.getId().equals(Long.valueOf(idSucursal)))
@@ -163,4 +173,84 @@ public class InventarioController {
         }
         return respuesta;
     }
+    @GetMapping("/inventario/descargar-excel")
+    public void descargarExcel(@RequestParam("idSucursal") Integer idSucursal,
+                               HttpServletResponse response,
+                               Authentication authentication) throws IOException {
+        List<ProductoInventarioView> productos = inventarioRepository.findProductosPorSucursal(idSucursal);
+        String nombreSucursal = sucursalRepository.findById(Long.valueOf(idSucursal))
+                .map(SucursalEntity::getNombre)
+                .orElse("Sucursal");
+
+        String username = authentication.getName();
+        String nombreEmpleado = empleadoRepository.findByUsuario(username)
+                .map(EmpleadoEntity::getNombre)
+                .orElse("Empleado desconocido");
+
+        LocalDateTime ahora = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String fecha = ahora.format(formatter);
+        //String fecha = java.time.LocalDateTime.now().toString();
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Inventario");
+
+        sheet.createRow(0).createCell(0).setCellValue("Sucursal: " + nombreSucursal);
+        sheet.createRow(1).createCell(0).setCellValue("Empleado: " + nombreEmpleado);
+        sheet.createRow(2).createCell(0).setCellValue("Fecha: " + fecha);
+
+        Row headerRow = sheet.createRow(4);
+        headerRow.createCell(0).setCellValue("Nombre");
+        headerRow.createCell(1).setCellValue("Stock");
+        headerRow.createCell(2).setCellValue("Precio");
+        headerRow.createCell(3).setCellValue("Imagen");
+
+        Drawing<?> drawing = sheet.createDrawingPatriarch();
+        CreationHelper helper = workbook.getCreationHelper();
+
+        int rowNum = 5;
+        for (ProductoInventarioView producto : productos) {
+            Row row = sheet.createRow(rowNum);
+            row.setHeightInPoints(60);
+            row.createCell(0).setCellValue(producto.getNombre());
+            row.createCell(1).setCellValue(producto.getStock());
+            row.createCell(2).setCellValue(producto.getPrecio());
+
+            String imagenUrl = producto.getImagen();
+            String nombreArchivo = imagenUrl.substring(imagenUrl.lastIndexOf("/") + 1);
+
+            ClassPathResource imgFile = new ClassPathResource("static/img/productos/" + nombreArchivo);
+            if (imgFile.exists()) {
+                try (InputStream is = imgFile.getInputStream()) {
+                    byte[] bytes = is.readAllBytes();
+                    int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+
+                    ClientAnchor anchor = helper.createClientAnchor();
+                    anchor.setCol1(3);
+                    anchor.setRow1(rowNum);
+                    anchor.setCol2(4);
+                    anchor.setRow2(rowNum + 1);
+
+                    Picture pict = drawing.createPicture(anchor, pictureIdx);
+                    pict.resize(1, 1);
+                }
+            }
+            rowNum++;
+        }
+
+        for (int i = 0; i <= 2; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=inventario_sucursal_" + idSucursal + ".xlsx");
+        workbook.write(response.getOutputStream());
+        workbook.close();
+    }
+
+
+
+
+
+
 }
