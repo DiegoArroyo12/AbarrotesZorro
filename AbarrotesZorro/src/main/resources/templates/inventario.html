@@ -14,12 +14,11 @@
 <div class="container">
   <header class="header">
     <h1>Inventario de la <span th:text="${nombreSucursal}">Nombre Sucursal</span></h1>
-    <div class="acciones">
+    <div class="columns">
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
-      <div sec:authorize="hasAuthority('Gerente')" class="buttons">
-        <button th:onclick="'window.location.href=\'/inventario/nuevo?idSucursal=' + ${idSucursal} + '\''">Agregar Producto</button>
-        <button onclick="location.href='/inventario/pedido'">Pedido a Proveedor</button>
-      </div>
+      <button onclick="location.href='/inventario/realizar-pedido'" sec:authorize="hasAuthority('Gerente')">Pedido a Proveedor</button>
+      <button th:onclick="'window.location.href=\'/inventario/nuevo?idSucursal=' + ${idSucursal} + '\''" sec:authorize="hasAuthority('Gerente')">Agregar Producto</button>
+      <button onclick="" sec:authorize="hasAuthority('Gerente')">Descargar Excel</button>
     </div>
   </header>
 
@@ -112,15 +111,16 @@
     })
     .then(response => response.json())
     .then(data => {
-    console.log(data);
       if(data.status === 'ok') {
-        // Actualizar los spans con el nuevo valor
-        const spans = row.querySelectorAll('span');
-        spans[0].textContent = datos.nombre;
-        spans[1].textContent = datos.stock;
-        spans[2].textContent = datos.precio;
+        const nombre = nombreInput.value;
+        const stock = stockInput.value;
+        const precio = precioInput.value;
 
-        // Ocultar inputs y volver a mostrar spans
+        const spans = row.querySelectorAll('span');
+        spans[0].textContent = nombre;
+        spans[1].textContent = stock;
+        spans[2].textContent = precio;
+
         nombreInput.style.display = 'none';
         stockInput.style.display = 'none';
         precioInput.style.display = 'none';
@@ -141,7 +141,7 @@
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('Error al actualizar el producto.');
+      alert('Error');
     });
   }
 

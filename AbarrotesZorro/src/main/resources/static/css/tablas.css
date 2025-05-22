@@ -49,6 +49,23 @@ a {
     font-weight: bold;
 }
 
+.columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.columns button {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    background-color: rgb(216, 42, 42);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
 .buttons {
     display: flex;
     gap: 1rem;

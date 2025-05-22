@@ -24,12 +24,15 @@
     <p><strong>Cliente:</strong> [[${venta.cliente}]]</p>
     <p><strong>Empleado:</strong> [[${venta.empleado}]]</p>
     <p><strong>Sucursal:</strong> [[${venta.sucursal}]]</p>
+    <p><strong>Caja:</strong> [[${venta.caja}]]</p>
     <p><strong>Fecha:</strong> [[${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm:ss')}]]</p>
     <p><strong>Total de la Venta:</strong> $[[${#numbers.formatDecimal(venta.total, 0, 'COMMA', 2, 'POINT')}]]</p>
+    <br>
 
     <table>
       <thead>
       <tr>
+        <th>Imagen</th>
         <th>Producto</th>
         <th>Cantidad</th>
         <th>Precio Unitario</th>
@@ -39,6 +42,7 @@
       </thead>
       <tbody>
       <tr th:each="detalle : ${detalles}">
+        <td><img th:src="${detalle.imagen}" alt="Imagen"></td>
         <td th:text="${detalle.nombre}"></td>
         <td th:text="${detalle.cantidad}"></td>
         <td th:text="${detalle.precio}"></td>
