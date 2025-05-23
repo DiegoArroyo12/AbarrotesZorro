@@ -7,9 +7,11 @@ import jakarta.activation.FileDataSource;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import mx.unam.aragon.model.dto.DetalleVentaDTO;
 import mx.unam.aragon.model.entity.*;
 import mx.unam.aragon.repository.*;
+import mx.unam.aragon.service.venta.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -30,8 +32,9 @@ public class VentaPdfController {
     @Autowired private EmpleadoRepository empleadoRepository;
     @Autowired private ProductoRepository productoRepository;
     @Autowired private CajaRepository cajaRepository;
+    @Autowired private SucursalRepository sucursalRepository;
 
-    @Value("${correo.usuario}") // spring.mail.username
+    @Value("${correo.usuario}")
     private String fromEmail;
 
     @Value("${correo.contrasena}")
@@ -50,9 +53,8 @@ public class VentaPdfController {
             @RequestParam("cantidades[]") List<Integer> cantidades,
             @RequestParam("precios[]") List<Double> precios,
             @RequestParam("imagenes[]") List<String> imagenes,
-            HttpServletResponse response
+            HttpSession session
     ) {
-        // Construimos la lista de productos (DTOs para el PDF)
         List<DetalleVentaDTO> detallesDTO = new ArrayList<>();
         for (int i = 0; i < nombres.size(); i++) {
             String imagenRelativa = imagenes.get(i);
@@ -71,6 +73,7 @@ public class VentaPdfController {
         Optional<ClienteEntity> clienteEntity = clienteRepository.findByCorreo(cliente);
         Optional<EmpleadoEntity> empleadoEntity = empleadoRepository.findById(Long.parseLong(empleado));
         Optional<CajaEntity> cajaEntity = cajaRepository.findById(Long.parseLong(caja));
+        Optional<SucursalEntity> sucursalEntity = sucursalRepository.findById(Long.parseLong(sucursal));
 
         // Guardar la venta principal
         VentaEntity venta = VentaEntity.builder()
@@ -102,18 +105,16 @@ public class VentaPdfController {
         model.put("cliente", clienteEntity.map(ClienteEntity::getNombre).orElse("Desconocido"));
         model.put("empleado", empleadoEntity.map(EmpleadoEntity::getNombre).orElse("Desconocido"));
         model.put("caja", caja);
-        model.put("sucursal", sucursal);
+        model.put("sucursal", sucursalEntity.map(SucursalEntity::getNombre).orElse("Desconocido"));
         model.put("fecha", fecha);
         model.put("hora", hora);
         model.put("detalles", detallesDTO);
         model.put("total", total);
 
         try {
-            // Generar PDF en archivo temporal
             File tempPdf = File.createTempFile("venta-", ".pdf");
             generarPdfEnArchivo(tempPdf, model);
 
-            // Enviar por correo
             clienteEntity.ifPresent(clienteFinal -> {
                 enviarCorreoConAdjunto(clienteFinal.getCorreo(), tempPdf);
             });
@@ -122,14 +123,13 @@ public class VentaPdfController {
             e.printStackTrace();
         }
 
-        // Devolver PDF al navegador como descarga
-        response.setHeader("Content-Disposition", "attachment; filename=venta.pdf");
-        return new ModelAndView(new DetalleVentaPdfView(), model);
+        session.removeAttribute("ventaTemp");
+
+        return new ModelAndView("redirect:/inicio");
+
     }
 
-    /**
-     * Genera el PDF usando DetalleVentaPdfView y lo guarda en un archivo.
-     */
+
     private void generarPdfEnArchivo(File archivo, Map<String, Object> model) throws Exception {
         Document document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream(archivo));
@@ -138,9 +138,7 @@ public class VentaPdfController {
         document.close();
     }
 
-    /**
-     * Envía un correo con el PDF adjunto al destinatario.
-     */
+
     private void enviarCorreoConAdjunto(String destinatario, File archivoPdf) {
         try {
             Properties props = new Properties();

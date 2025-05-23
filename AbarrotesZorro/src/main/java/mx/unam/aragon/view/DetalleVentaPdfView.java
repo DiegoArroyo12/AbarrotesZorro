@@ -53,7 +53,6 @@ public class DetalleVentaPdfView extends AbstractPdfView {
             try {
                 InputStream is = getClass().getResourceAsStream("/static" + d.getImagen());
                 if (is == null) {
-                    // Imagen por defecto si no se encuentra
                     is = getClass().getResourceAsStream("/static/img/default.jpg");
                 }
 
