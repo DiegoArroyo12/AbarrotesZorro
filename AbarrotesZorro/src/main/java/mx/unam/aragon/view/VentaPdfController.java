@@ -18,10 +18,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 
 @Controller
 public class VentaPdfController {
@@ -132,7 +134,9 @@ public class VentaPdfController {
 
     private void generarPdfEnArchivo(File archivo, Map<String, Object> model) throws Exception {
         Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(archivo));
+        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(archivo));
+        Color cremaSuave = new Color(243, 238, 228);
+        writer.setPageEvent(new PageBackgroundEvent(cremaSuave));
         document.open();
         new DetalleVentaPdfView().buildPdfDocument(model, document, null, null, null);
         document.close();

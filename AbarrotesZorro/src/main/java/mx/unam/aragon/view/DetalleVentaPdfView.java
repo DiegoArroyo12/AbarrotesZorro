@@ -1,6 +1,8 @@
 package mx.unam.aragon.view;
 
 import com.lowagie.text.*;
+import com.lowagie.text.Font;
+import com.lowagie.text.Image;
 import com.lowagie.text.pdf.*;
 import mx.unam.aragon.model.dto.DetalleVentaDTO;
 import org.springframework.web.servlet.view.document.AbstractPdfView;
@@ -8,6 +10,7 @@ import org.springframework.web.servlet.view.document.AbstractPdfView;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.awt.*;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +24,7 @@ public class DetalleVentaPdfView extends AbstractPdfView {
                                     HttpServletRequest request,
                                     HttpServletResponse response) throws Exception {
 
+
         String cliente = (String) model.get("cliente");
         String empleado = (String) model.get("empleado");
         String sucursal = (String) model.get("sucursal");
@@ -30,24 +34,38 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         Double total = (Double) model.get("total");
         List<DetalleVentaDTO> detalles = (List<DetalleVentaDTO>) model.get("detalles");
 
-        document.add(new Paragraph("Detalle de Venta"));
-        document.add(new Paragraph("Cliente: " + cliente));
-        document.add(new Paragraph("Empleado: " + empleado));
-        document.add(new Paragraph("Caja: " + caja));
-        document.add(new Paragraph("Sucursal: " + sucursal));
-        document.add(new Paragraph("Fecha: " + fecha));
-        document.add(new Paragraph("Hora de la compra: " + hora));
+        Font tituloFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Color.RED.darker());
+        Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Color.BLACK);
+        Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.BLACK);
+
+        Paragraph titulo = new Paragraph("DETALLE DE VENTA", tituloFont);
+        titulo.setAlignment(Element.ALIGN_CENTER);
+        titulo.setSpacingAfter(10f);
+        document.add(titulo);
+
+        document.add(new Paragraph("Cliente: " + cliente, boldFont));
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph("Empleado: " + empleado, boldFont));
+        document.add(new Paragraph("Caja: " + caja, boldFont));
+        document.add(new Paragraph("Sucursal: " + sucursal, boldFont));
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph("Fecha: " + fecha, boldFont));
+        document.add(new Paragraph("Hora de la compra: " + hora, boldFont));
         document.add(new Paragraph(" "));
 
         PdfPTable table = new PdfPTable(5);
         table.setWidths(new float[]{2, 4, 2, 2, 2});
         table.setWidthPercentage(100);
+        table.setSpacingBefore(10f);
 
-        table.addCell("Imagen");
-        table.addCell("Producto");
-        table.addCell("Cantidad");
-        table.addCell("Precio");
-        table.addCell("Subtotal");
+        String[] encabezados = {"Imagen", "Producto", "Cantidad", "Precio", "Subtotal"};
+        for (String encabezado : encabezados) {
+            PdfPCell header = new PdfPCell(new Phrase(encabezado, normalFont));
+            header.setBackgroundColor(Color.ORANGE);
+            header.setHorizontalAlignment(Element.ALIGN_CENTER);
+            header.setPadding(5);
+            table.addCell(header);
+        }
 
         for (DetalleVentaDTO d : detalles) {
             try {
@@ -61,23 +79,30 @@ public class DetalleVentaPdfView extends AbstractPdfView {
                     img.scaleAbsolute(40f, 40f);
                     PdfPCell imgCell = new PdfPCell(img, true);
                     imgCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    imgCell.setPadding(5);
                     table.addCell(imgCell);
                 } else {
-                    table.addCell("Sin imagen");
+                    table.addCell(new PdfPCell(new Phrase("Sin imagen", normalFont)));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                table.addCell("Error imagen");
+                table.addCell(new PdfPCell(new Phrase("Error imagen", normalFont)));
             }
 
-            table.addCell(d.getNombre());
-            table.addCell(String.valueOf(d.getCantidad()));
-            table.addCell(String.format("$%.2f", d.getPrecio()));
-            table.addCell(String.format("$%.2f", d.getSubtotal()));
+            table.addCell(new PdfPCell(new Phrase(d.getNombre(), normalFont)));
+            table.addCell(new PdfPCell(new Phrase(String.valueOf(d.getCantidad()), normalFont)));
+            table.addCell(new PdfPCell(new Phrase(String.format("$%.2f", d.getPrecio()), normalFont)));
+            table.addCell(new PdfPCell(new Phrase(String.format("$%.2f", d.getSubtotal()), normalFont)));
         }
 
         document.add(table);
+
         document.add(new Paragraph(" "));
-        document.add(new Paragraph("Total: $" + String.format("%.2f", total)));
+
+        Paragraph totalParrafo = new Paragraph("Total: $" + String.format("%.2f", total), tituloFont);
+        totalParrafo.setAlignment(Element.ALIGN_RIGHT);
+        totalParrafo.setSpacingBefore(10f);
+        document.add(totalParrafo);
     }
+
 }
