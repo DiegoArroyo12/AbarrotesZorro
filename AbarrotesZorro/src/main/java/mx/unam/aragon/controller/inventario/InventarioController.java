@@ -57,18 +57,31 @@ public class InventarioController {
     private String imagenesPath;
 
     @GetMapping("/inventario")
-    public String mostrarInventario(@RequestParam("idSucursal") Integer idSucursal, Model model) {
+    public String mostrarInventario(@RequestParam("idSucursal") Integer idSucursal,
+                                    Model model,
+                                    Authentication authentication) {
         model.addAttribute("inventario", inventarioRepository.findBySucursal(idSucursal));
         model.addAttribute("idSucursal", idSucursal);
 
-        String nombreSucursal = sucursalRepository.findById(Long.valueOf(idSucursal)).map(SucursalEntity::getNombre).orElse("Nombre no encontrado");
+        String nombreSucursal = sucursalRepository.findById(Long.valueOf(idSucursal))
+                .map(SucursalEntity::getNombre)
+                .orElse("Nombre no encontrado");
         List<ProductoInventarioView> productos = inventarioRepository.findProductosPorSucursal(idSucursal);
 
         model.addAttribute("nombreSucursal", nombreSucursal);
         model.addAttribute("productos", productos);
-        model.addAttribute("nombreSucursal", nombreSucursal);
+
+        String username = authentication.getName();
+        EmpleadoEntity empleado = empleadoRepository.findByUsuario(username).orElse(null);
+        if (empleado != null && empleado.getSucursal() != null) {
+            model.addAttribute("sucursalEmpleadoId", empleado.getSucursal().getId());
+        } else {
+            model.addAttribute("sucursalEmpleadoId", -1); // Valor por defecto si no tiene sucursal
+        }
+
         return "inventario";
     }
+
 
     @GetMapping("/inventario/nuevo")
     public String nuevoProducto(@RequestParam("idSucursal") Integer idSucursal, Model model) {
@@ -177,20 +190,29 @@ public class InventarioController {
     public void descargarExcel(@RequestParam("idSucursal") Integer idSucursal,
                                HttpServletResponse response,
                                Authentication authentication) throws IOException {
+        // Obtener al empleado autenticado
+        String username = authentication.getName();
+        EmpleadoEntity empleado = empleadoRepository.findByUsuario(username).orElse(null);
+
+        // Validar que sea gerente y que solo pueda descargar de su propia sucursal
+        if (empleado != null && empleado.getRoles().stream().anyMatch(rol -> "Gerente".equals(rol.getNombre()))) {
+            Long idSucursalEmpleado = empleado.getSucursal().getId();
+            if (!idSucursalEmpleado.equals(Long.valueOf(idSucursal))) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "No tienes permiso para exportar esta sucursal.");
+                return;
+            }
+        }
+
+        // Obtener datos para exportación
         List<ProductoInventarioView> productos = inventarioRepository.findProductosPorSucursal(idSucursal);
         String nombreSucursal = sucursalRepository.findById(Long.valueOf(idSucursal))
                 .map(SucursalEntity::getNombre)
                 .orElse("Sucursal");
 
-        String username = authentication.getName();
-        String nombreEmpleado = empleadoRepository.findByUsuario(username)
-                .map(EmpleadoEntity::getNombre)
-                .orElse("Empleado desconocido");
-
+        String nombreEmpleado = empleado != null ? empleado.getNombre() : "Empleado desconocido";
         LocalDateTime ahora = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         String fecha = ahora.format(formatter);
-        //String fecha = java.time.LocalDateTime.now().toString();
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Inventario");
@@ -203,39 +225,14 @@ public class InventarioController {
         headerRow.createCell(0).setCellValue("Nombre");
         headerRow.createCell(1).setCellValue("Stock");
         headerRow.createCell(2).setCellValue("Precio");
-        headerRow.createCell(3).setCellValue("Imagen");
-
-        Drawing<?> drawing = sheet.createDrawingPatriarch();
-        CreationHelper helper = workbook.getCreationHelper();
 
         int rowNum = 5;
         for (ProductoInventarioView producto : productos) {
-            Row row = sheet.createRow(rowNum);
+            Row row = sheet.createRow(rowNum++);
             row.setHeightInPoints(60);
             row.createCell(0).setCellValue(producto.getNombre());
             row.createCell(1).setCellValue(producto.getStock());
             row.createCell(2).setCellValue(producto.getPrecio());
-
-            String imagenUrl = producto.getImagen();
-            String nombreArchivo = imagenUrl.substring(imagenUrl.lastIndexOf("/") + 1);
-
-            ClassPathResource imgFile = new ClassPathResource("static/img/productos/" + nombreArchivo);
-            if (imgFile.exists()) {
-                try (InputStream is = imgFile.getInputStream()) {
-                    byte[] bytes = is.readAllBytes();
-                    int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
-
-                    ClientAnchor anchor = helper.createClientAnchor();
-                    anchor.setCol1(3);
-                    anchor.setRow1(rowNum);
-                    anchor.setCol2(4);
-                    anchor.setRow2(rowNum + 1);
-
-                    Picture pict = drawing.createPicture(anchor, pictureIdx);
-                    pict.resize(1, 1);
-                }
-            }
-            rowNum++;
         }
 
         for (int i = 0; i <= 2; i++) {
@@ -247,10 +244,5 @@ public class InventarioController {
         workbook.write(response.getOutputStream());
         workbook.close();
     }
-
-
-
-
-
 
 }

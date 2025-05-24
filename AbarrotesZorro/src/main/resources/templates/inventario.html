@@ -18,7 +18,11 @@
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
       <button onclick="location.href='/inventario/realizar-pedido'" sec:authorize="hasAuthority('Gerente')">Pedido a Proveedor</button>
       <button th:onclick="'window.location.href=\'/inventario/nuevo?idSucursal=' + ${idSucursal} + '\''" sec:authorize="hasAuthority('Gerente')">Agregar Producto</button>
-      <button th:onclick="'location.href=\'/inventario/descargar-excel?idSucursal=' + ${idSucursal} + '\''"  sec:authorize="hasAuthority('Gerente')">Descargar Inventario</button>
+      <button th:if="${sucursalEmpleadoId == idSucursal}"
+              th:onclick="'location.href=\'/inventario/descargar-excel?idSucursal=' + ${idSucursal} + '\''"
+              sec:authorize="hasAuthority('Gerente')">
+        Descargar Inventario
+      </button>
     </div>
   </header>
 

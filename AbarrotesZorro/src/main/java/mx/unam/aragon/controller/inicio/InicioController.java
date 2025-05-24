@@ -54,6 +54,7 @@ public class InicioController {
         if (correo != null && !correo.isEmpty()) {
             ClienteEntity cliente = clienteService.findByCorreo(correo);
             if (cliente != null) {
+                model.addAttribute("idCliente", cliente.getCorreo());
                 model.addAttribute("nombreCliente", cliente.getNombre());
             }
         }
