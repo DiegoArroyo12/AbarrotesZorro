@@ -11,7 +11,7 @@ import java.util.Objects;
 @Setter
 @Getter
 @Embeddable
-public class IdInventario implements Serializable {
+public class IdProductoSucursal implements Serializable {
 
     @Column(name = "id_producto")
     private Long idProducto;
@@ -19,9 +19,9 @@ public class IdInventario implements Serializable {
     @Column(name = "id_sucursal")
     private Long idSucursal;
 
-    public IdInventario() {}
+    public IdProductoSucursal() {}
 
-    public IdInventario(Long idProducto, Long idSucursal) {
+    public IdProductoSucursal(Long idProducto, Long idSucursal) {
         this.idProducto = idProducto;
         this.idSucursal = idSucursal;
     }
@@ -29,7 +29,7 @@ public class IdInventario implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        IdInventario that = (IdInventario) o;
+        IdProductoSucursal that = (IdProductoSucursal) o;
         return Objects.equals(idProducto, that.idProducto) && Objects.equals(idSucursal, that.idSucursal);
     }
 

@@ -113,3 +113,13 @@ img {
     width: 5rem;
     height: auto;
 }
+
+.btn-more {
+    padding: 0.6rem;
+    background-color: #d22230;
+}
+
+.btn-less {
+    padding: 0.6rem;
+    background-color: #808182;
+}

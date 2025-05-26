@@ -7,25 +7,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mx.unam.aragon.model.entity.seriales.IdProductoSucursal;
 
-@Entity(name = "inventarios")
+@Entity(name = "productos_pedidos")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class InventarioEntity {
+public class ProductosPedidosEntity {
     @EmbeddedId
     private IdProductoSucursal id;
 
     @ManyToOne
-    @MapsId("idProducto")
-    @JoinColumn(name = "id_producto")
+    @JoinColumn(name = "id_producto", insertable = false, updatable = false)
     private ProductoEntity producto;
 
     @ManyToOne
-    @MapsId("idSucursal")
-    @JoinColumn(name = "id_sucursal")
+    @JoinColumn(name = "id_sucursal", insertable = false, updatable = false)
     private SucursalEntity sucursal;
 
-    @Column(name = "stock")
-    private int stock;
+    @Column(name = "cantidad")
+    private int cantidad;
 }

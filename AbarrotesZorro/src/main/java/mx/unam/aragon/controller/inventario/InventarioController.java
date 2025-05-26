@@ -5,7 +5,7 @@ import mx.unam.aragon.model.entity.EmpleadoEntity;
 import mx.unam.aragon.model.entity.InventarioEntity;
 import mx.unam.aragon.model.entity.ProductoEntity;
 import mx.unam.aragon.model.entity.SucursalEntity;
-import mx.unam.aragon.model.entity.seriales.IdInventario;
+import mx.unam.aragon.model.entity.seriales.IdProductoSucursal;
 import mx.unam.aragon.model.entity.view.ProductoInventarioView;
 import mx.unam.aragon.repository.EmpleadoRepository;
 import mx.unam.aragon.repository.ProductoRepository;
@@ -22,13 +22,11 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -115,8 +113,8 @@ public class InventarioController {
             ProductoEntity productoGuardado = productoRepository.save(producto);
 
             InventarioEntity inventario = new InventarioEntity();
-            IdInventario idInventario = new IdInventario(productoGuardado.getId(), Long.valueOf(idSucursal));
-            inventario.setId(idInventario);
+            IdProductoSucursal idProductoSucursal = new IdProductoSucursal(productoGuardado.getId(), Long.valueOf(idSucursal));
+            inventario.setId(idProductoSucursal);
             inventario.setProducto(productoGuardado);
             inventario.setSucursal(sucursalRepository.findById(Long.valueOf(idSucursal)).orElse(null));
             inventario.setStock(stock);
@@ -129,7 +127,7 @@ public class InventarioController {
 
             for (SucursalEntity sucursal : otrasSucursales) {
                 InventarioEntity inventarioAdicional = new InventarioEntity();
-                IdInventario idAdicional = new IdInventario(productoGuardado.getId(), sucursal.getId());
+                IdProductoSucursal idAdicional = new IdProductoSucursal(productoGuardado.getId(), sucursal.getId());
                 inventarioAdicional.setId(idAdicional);
                 inventarioAdicional.setProducto(productoGuardado);
                 inventarioAdicional.setSucursal(sucursal);

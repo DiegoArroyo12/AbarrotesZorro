@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import mx.unam.aragon.model.dto.DetalleVentaDTO;
 import mx.unam.aragon.model.entity.*;
+import mx.unam.aragon.model.entity.seriales.IdProductoSucursal;
 import mx.unam.aragon.repository.*;
 import mx.unam.aragon.service.venta.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ public class VentaPdfController {
     @Autowired private ProductoRepository productoRepository;
     @Autowired private CajaRepository cajaRepository;
     @Autowired private SucursalRepository sucursalRepository;
+    @Autowired private ProductosPedidosRepository productosPedidosRepository;
 
     @Value("${correo.usuario}")
     private String fromEmail;
@@ -100,6 +102,23 @@ public class VentaPdfController {
                     .build();
 
             detalleVentaRepository.save(detalle);
+
+            // Guardar en Productos Pedidos
+            if (sucursalEntity.isPresent()) {
+                IdProductoSucursal id = new IdProductoSucursal(producto.getId(), sucursalEntity.get().getId());
+
+                ProductosPedidosEntity existente = productosPedidosRepository.findById(id).orElse(null);
+                if (existente != null) {
+                    existente.setCantidad(existente.getCantidad() + cantidades.get(i));
+                    productosPedidosRepository.save(existente);
+                } else {
+                    ProductosPedidosEntity nuevo = ProductosPedidosEntity.builder()
+                            .id(id)
+                            .cantidad(cantidades.get(i))
+                            .build();
+                    productosPedidosRepository.save(nuevo);
+                }
+            }
         }
 
         // Modelo para el PDF y correo

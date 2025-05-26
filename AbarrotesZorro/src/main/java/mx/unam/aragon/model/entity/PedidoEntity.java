@@ -5,9 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mx.unam.aragon.model.entity.enums.EstadoPedido;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity(name = "pedidos")
 @Data
@@ -21,20 +20,13 @@ public class PedidoEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_provedor", nullable = false)
-    private ProveedorEntity provedor;
+    @JoinColumn(name = "id_proveedor", nullable = false)
+    private ProveedorEntity proveedor;
 
     @ManyToOne
     @JoinColumn(name = "id_empleado", nullable = false)
     private EmpleadoEntity empleado;
 
-    @Column(name = "total")
-    private Double total;
-
     @Column(name = "fecha")
-    private LocalDate fecha;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estado")
-    private EstadoPedido estado;
+    private LocalDateTime fecha;
 }

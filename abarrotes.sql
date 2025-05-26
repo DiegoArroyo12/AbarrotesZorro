@@ -202,20 +202,6 @@ CREATE TABLE historial_accesos (
   FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal)
 );
 
--- Movimientos de inventario (entrada/salida)
-DROP TABLE IF EXISTS movimientos_inventarios;
-CREATE TABLE movimientos_inventarios (
-	id_movimiento INT PRIMARY KEY AUTO_INCREMENT,
-	id_producto INT,
-	id_sucursal INT,
-	cantidad INT,
-	tipo ENUM('ENTRADA', 'SALIDA'),
-	fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	referencia VARCHAR(50), -- referencia de venta o pedido
-	FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
-	FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal)
-);
-
 -- Ventas
 DROP TABLE IF EXISTS ventas;
 CREATE TABLE ventas (
@@ -242,15 +228,23 @@ CREATE TABLE detalle_ventas (
 	FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
 );
 
+-- Productos Pedido
+CREATE TABLE productos_pedidos (
+    id_producto INT,
+    id_sucursal INT,
+    cantidad INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (id_producto, id_sucursal),
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
+    FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal)
+);
+
 -- Pedidos a proveedores
 DROP TABLE IF EXISTS pedidos;
 CREATE TABLE pedidos (
 	id_pedido INT PRIMARY KEY AUTO_INCREMENT,
 	id_proveedor INT,
 	id_empleado INT,
-	total DOUBLE,
 	fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	estado ENUM('PENDIENTE', 'RECIBIDO', 'CANCELADO') DEFAULT 'PENDIENTE',
 	FOREIGN KEY (id_proveedor) REFERENCES proveedores(id_proveedor),
 	FOREIGN KEY (id_empleado) REFERENCES empleados(id_empleado)
 );
@@ -262,7 +256,6 @@ CREATE TABLE detalle_pedidos (
 	id_pedido INT,
 	id_producto INT,
 	cantidad INT,
-	precio_unitario DOUBLE,
 	FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
 	FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
 );

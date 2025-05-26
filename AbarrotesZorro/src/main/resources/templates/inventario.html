@@ -16,7 +16,7 @@
     <h1>Inventario de la <span th:text="${nombreSucursal}">Nombre Sucursal</span></h1>
     <div class="columns">
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
-      <button onclick="location.href='/inventario/realizar-pedido'" sec:authorize="hasAuthority('Gerente')">Pedido a Proveedor</button>
+      <button th:onclick="|window.location.href='/proveedor/pedidos?idSucursal=${idSucursal}'|" sec:authorize="hasAuthority('Gerente')">Pedido a Proveedor</button>
       <button th:onclick="'window.location.href=\'/inventario/nuevo?idSucursal=' + ${idSucursal} + '\''" sec:authorize="hasAuthority('Gerente')">Agregar Producto</button>
       <button th:if="${sucursalEmpleadoId == idSucursal}"
               th:onclick="'location.href=\'/inventario/descargar-excel?idSucursal=' + ${idSucursal} + '\''"
@@ -93,7 +93,7 @@
     const precioInput = row.querySelector('#precio');
     const imagenInput = row.querySelector('#imagen');
     const id = button.getAttribute('data-id');
-    const idSucursal = [[$,{idSucursal}]];
+    const idSucursal = [[${idSucursal}]];
 
     const formData = new FormData();
     formData.append("id", id);

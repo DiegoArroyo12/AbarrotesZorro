@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <link th:href="@{/css/tablas.css}" rel="stylesheet">
+    <title>Proveedor</title>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <h1>Pedido a Proveedor</h1>
+        <div class="acciones">
+            <button th:onclick="|window.location.href='/inventario?idSucursal=${idSucursal}'|">Volver a Inventario</button>
+            <button th:onclick="'window.location.href=\'/proveedor/nuevo?idSucursal=' + ${idSucursal} + '\''">Agregar Proveedor</button>
+            <button th:onclick="">Realizar Pedido</button>
+        </div>
+    </header>
+
+    <section class="tabla-productos">
+        <table>
+            <thead>
+            <tr>
+                <th>Imagen</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="producto : ${productosPedidos}" th:attr="data-sucursal=${producto.id.idSucursal}">
+                <td><img th:src="@{${producto.producto.imagen}}" alt="Imagen" width="50"></td>
+                <td><span th:text="${producto.producto.nombre}">Nombre</span></td>
+                <td>
+                    <button type="button" class="btn-less" th:attr="data-id=${producto.id.idProducto}" onclick="modificarCantidad(this, -1)">-</button>
+
+                    <span id="cantidad-[[${producto.id.idProducto}]]" th:text="${producto.cantidad}">0</span>
+
+                    <button type="button" class="btn-more"th:attr="data-id=${producto.id.idProducto}" onclick="modificarCantidad(this, 1)">+</button>
+                </td>
+                <td>
+                    <button class="btn-delete" th:attr="data-id=${producto.id.idProducto}" onclick="eliminarProducto(this)">Eliminar</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+</body>
+<script th:inline="javascript">
+    function modificarCantidad(button, cambio) {
+        const row = button.closest('tr');
+        const idProducto = button.getAttribute('data-id');
+        const idSucursal = row.getAttribute('data-sucursal');
+        const cantidadSpan = document.getElementById(`cantidad-${idProducto}`);
+        let cantidad = parseInt(cantidadSpan.textContent);
+        cantidad = Math.max(0, cantidad + cambio);
+        cantidadSpan.textContent = cantidad;
+
+        fetch('/productos-pedidos/actualizar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                    document.querySelector('meta[name="_csrf"]').getAttribute('content')
+            },
+            body: `idProducto=${idProducto}&idSucursal=${idSucursal}&cantidad=${cantidad}`
+        })
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error al actualizar cantidad:', error));
+    }
+
+    function eliminarProducto(button) {
+        const id = button.getAttribute('data-id');
+        const row = button.closest('tr');
+        const idSucursal = row.getAttribute('data-sucursal');
+
+        if (!confirm('¿Estás seguro de que deseas eliminar este producto del pedido?')) {
+            return;
+        }
+
+        fetch('/productos-pedidos/eliminar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                    document.querySelector('meta[name="_csrf"]').getAttribute('content')
+            },
+            body: `idProducto=${id}&idSucursal=${idSucursal}`
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            // Eliminar la fila de la tabla
+            row.remove();
+        })
+        .catch(error => console.error('Error al eliminar producto:', error));
+    }
+</script>
+</html>

@@ -81,7 +81,7 @@ body {
 .detalle-section td {
     border: 1px solid #ddd;
     padding: 10px;
-    text-align: left;
+    text-align: center;
 }
 .detalle-section th {
     background: #f9f9f9;

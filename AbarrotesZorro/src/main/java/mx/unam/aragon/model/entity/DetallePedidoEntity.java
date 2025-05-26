@@ -29,7 +29,4 @@ public class DetallePedidoEntity {
 
     @Column(name = "cantidad")
     private Integer cantidad;
-
-    @Column(name = "precio_unitario")
-    private Double precio_unitario;
 }

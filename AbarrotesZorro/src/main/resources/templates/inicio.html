@@ -157,7 +157,7 @@
                 const li = document.createElement("li");
                 li.innerHTML = `
                     <span>${producto.nombre} x${cantidades[i]}</span>
-                    <span style="float: right;">$${cantidades[i] * producto.precio}</span>
+                    <span style="float: right;">$${(cantidades[i] * producto.precio).toFixed(2)}</span>
                 `;
                 carritoLista.appendChild(li);
                 total += cantidades[i] * producto.precio;
