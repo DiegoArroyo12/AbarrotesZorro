@@ -35,13 +35,20 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         List<DetalleVentaDTO> detalles = (List<DetalleVentaDTO>) model.get("detalles");
 
         Font tituloFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Color.RED.darker());
+        Font subtituloFont= FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, Color.BLACK);
         Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Color.BLACK);
         Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.BLACK);
 
-        Paragraph titulo = new Paragraph("DETALLE DE VENTA", tituloFont);
+        Paragraph titulo = new Paragraph("Abarrotes Zorro", tituloFont);
         titulo.setAlignment(Element.ALIGN_CENTER);
         titulo.setSpacingAfter(10f);
         document.add(titulo);
+
+        Paragraph titulo2 = new Paragraph("Gracias por su compra:", subtituloFont);
+        titulo2.setAlignment(Element.ALIGN_CENTER);
+        titulo2.setSpacingAfter(10f);
+        document.add(titulo2);
+
 
         Paragraph p1 = new Paragraph("Cliente: " + cliente, boldFont);
         p1.setAlignment(Element.ALIGN_CENTER);
@@ -67,7 +74,7 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         p5.setAlignment(Element.ALIGN_CENTER);
         document.add(p5);
 
-        Paragraph p6 = new Paragraph("Hora de la compra: " + hora, boldFont);
+        Paragraph p6 = new Paragraph("Hora: " + hora, boldFont);
         p6.setAlignment(Element.ALIGN_CENTER);
         document.add(p6);
 
