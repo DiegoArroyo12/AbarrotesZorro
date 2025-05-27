@@ -119,6 +119,14 @@
         if (cajaGuardada && selectCaja) {
             selectCaja.value = cajaGuardada;
         }
+        const clienteGuardado = localStorage.getItem('zorro_cliente');
+        if (clienteGuardado) {
+            const cliente = JSON.parse(clienteGuardado);
+            document.getElementById('nombreCliente').textContent = cliente.nombre;
+            document.getElementById('correo').value = cliente.correo;
+            document.getElementById('telefono').value = cliente.telefono;
+            document.getElementById('idCliente').value = cliente.correo;
+        }
         console.log(idSucursal);
         productos.length = 0;
         cantidades.length = 0;
@@ -136,6 +144,16 @@
                     });
                 });
                 crearProductos();
+                const saved = JSON.parse(localStorage.getItem('zorro_carrito') || '[]');
+                saved.forEach(item => {
+                    const idx = productos.findIndex(p => p.nombre === item.nombre);
+                    if (idx >= 0) {
+                        cantidades[idx] = item.cantidad;
+                        const tarjetas = contenedorProductos.querySelectorAll('.producto:not(.template)');
+                        tarjetas[idx].querySelector('.cantidad').textContent = item.cantidad;
+                    }
+                });
+                actualizarCarrito();
             })
             .catch(error => console.error('Error al obtener productos: ', error));
     });
@@ -217,6 +235,11 @@
             .then(data => {
                 document.getElementById('nombreCliente').textContent = data.nombre;
                 document.getElementById('idCliente').value = data.correo;
+                localStorage.setItem('zorro_cliente', JSON.stringify({
+                    nombre: data.nombre,
+                    correo: data.correo,
+                    telefono: data.telefono
+                }));
             })
             .catch(error => {
                 console.error(error);
@@ -286,6 +309,8 @@
             imagen: producto.imagen
         })).filter(p => p.cantidad > 0);
 
+        localStorage.setItem('zorro_carrito', JSON.stringify(productosCompra));
+
         if (productosCompra.length === 0) {
             alert("El carrito está vacío.");
             return;
@@ -322,7 +347,7 @@
             fecha: fechaActual
         };
 
-
+        localStorage.setItem('zorro_carrito', JSON.stringify(productosCompra));
         fetch('/detalle-venta', {
             method: 'POST',
             headers: {
@@ -335,10 +360,10 @@
             .then(response => response.text())
             .then(html => {
                 document.open();
-                document.write(html);
+                window.location.href = '/detalle-venta';
                 document.close();
             })
-                .catch(err => {
+            .catch(err => {
                 console.error('Error al realizar compra:', err);
                 alert("Error al realizar la compra.");
             });
@@ -357,6 +382,8 @@
 
         const cantidadSpans = document.querySelectorAll(".cantidad");
         cantidadSpans.forEach(span => span.textContent = '0');
+        localStorage.removeItem('zorro_cliente');
+
     }
     function guardarCajaLocalStorage(idCaja) {
         localStorage.setItem("cajaSeleccionada", idCaja);

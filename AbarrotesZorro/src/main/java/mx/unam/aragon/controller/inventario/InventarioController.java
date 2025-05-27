@@ -188,11 +188,9 @@ public class InventarioController {
     public void descargarExcel(@RequestParam("idSucursal") Integer idSucursal,
                                HttpServletResponse response,
                                Authentication authentication) throws IOException {
-        // Obtener al empleado autenticado
         String username = authentication.getName();
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(username).orElse(null);
 
-        // Validar que sea gerente y que solo pueda descargar de su propia sucursal
         if (empleado != null && empleado.getRoles().stream().anyMatch(rol -> "Gerente".equals(rol.getNombre()))) {
             Long idSucursalEmpleado = empleado.getSucursal().getId();
             if (!idSucursalEmpleado.equals(Long.valueOf(idSucursal))) {
@@ -201,7 +199,6 @@ public class InventarioController {
             }
         }
 
-        // Obtener datos para exportación
         List<ProductoInventarioView> productos = inventarioRepository.findProductosPorSucursal(idSucursal);
         String nombreSucursal = sucursalRepository.findById(Long.valueOf(idSucursal))
                 .map(SucursalEntity::getNombre)
@@ -217,8 +214,7 @@ public class InventarioController {
 
         sheet.createRow(0).createCell(0).setCellValue("Sucursal: " + nombreSucursal);
         sheet.createRow(1).createCell(0).setCellValue("Empleado: " + nombreEmpleado);
-        sheet.createRow(2).createCell(0).setCellValue("Fecha: " + fecha);
-
+        sheet.createRow(2).createCell(0).setCellValue("Fecha y Hora:" + fecha);
         Row headerRow = sheet.createRow(4);
         headerRow.createCell(0).setCellValue("Nombre");
         headerRow.createCell(1).setCellValue("Stock");
@@ -227,7 +223,6 @@ public class InventarioController {
         int rowNum = 5;
         for (ProductoInventarioView producto : productos) {
             Row row = sheet.createRow(rowNum++);
-            row.setHeightInPoints(60);
             row.createCell(0).setCellValue(producto.getNombre());
             row.createCell(1).setCellValue(producto.getStock());
             row.createCell(2).setCellValue(producto.getPrecio());

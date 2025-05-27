@@ -147,7 +147,6 @@ public class VentaPdfController {
         session.removeAttribute("ventaTemp");
 
         return new ModelAndView("redirect:/inicio");
-
     }
 
 
