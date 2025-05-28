@@ -15,8 +15,8 @@
         <h1>Pedido a Proveedor</h1>
         <div class="acciones">
             <button th:onclick="|window.location.href='/inventario?idSucursal=${idSucursal}'|">Volver a Inventario</button>
-            <button th:onclick="'window.location.href=\'/proveedor/nuevo?idSucursal=' + ${idSucursal} + '\''">Agregar Proveedor</button>
-            <button th:onclick="">Realizar Pedido</button>
+            <button th:onclick="|window.location.href='/proveedor/nuevo?idSucursal=${idSucursal}'|">Agregar Proveedor</button>
+            <button th:onclick="mostrarModalPedido()">Realizar Pedido</button>
         </div>
     </header>
 
@@ -35,26 +35,64 @@
                 <td><img th:src="@{${producto.producto.imagen}}" alt="Imagen" width="50"></td>
                 <td><span th:text="${producto.producto.nombre}">Nombre</span></td>
                 <td>
-                    <button type="button" class="btn-less" th:attr="data-id=${producto.id.idProducto}" onclick="modificarCantidad(this, -1)">-</button>
+                    <button type="button" class="btn-less" th:attr="data-id=${producto.id.idProducto},data-sucursal=${producto.id.idSucursal}" onclick="modificarCantidad(this, -1)">-</button>
 
-                    <span id="cantidad-[[${producto.id.idProducto}]]" th:text="${producto.cantidad}">0</span>
+                    <span th:id="'cantidad-' + ${producto.id.idProducto}" th:text="${producto.cantidad}">0</span>
 
-                    <button type="button" class="btn-more"th:attr="data-id=${producto.id.idProducto}" onclick="modificarCantidad(this, 1)">+</button>
+                    <button type="button" class="btn-more" th:attr="data-id=${producto.id.idProducto},data-sucursal=${producto.id.idSucursal}" onclick="modificarCantidad(this, 1)">+</button>
                 </td>
                 <td>
-                    <button class="btn-delete" th:attr="data-id=${producto.id.idProducto}" onclick="eliminarProducto(this)">Eliminar</button>
+                    <button class="btn-delete"
+                            th:attr="data-id=${producto.id.idProducto},data-sucursal=${producto.id.idSucursal}"
+                            onclick="eliminarProducto(this)">
+                        Eliminar
+                    </button>
                 </td>
             </tr>
             </tbody>
         </table>
+        <div class="acciones add">
+            <button onclick="mostrarModalAgregarProducto()">Agregar Producto</button>
+        </div>
     </section>
+
+    <!-- Modal de Confirmación de Pedido -->
+    <div id="modalPedido" class="modal">
+        <h2>Selecciona el Proveedor</h2>
+        <select id="proveedorSelect" class="form-control">
+            <option th:each="proveedor : ${proveedores}"
+                    th:value="${proveedor.id}"
+                    th:text="${proveedor.nombre}">
+            </option>
+        </select>
+        <br>
+        <button onclick="confirmarPedido()">Confirmar Pedido</button>
+        <button class="cancel" onclick="cerrarModalPedido()">Cancelar</button>
+    </div>
+
+    <div id="modalAgregarProducto" class="modal">
+        <h2>Agregar Producto al Pedido</h2>
+        <form onsubmit="agregarProducto(event)" class="form-control">
+            <label for="productoSelect">Producto:</label>
+            <select id="productoSelect" class="form-control">
+                <option th:each="producto : ${productos}"
+                        th:value="${producto.id}"
+                        th:text="${producto.nombre}">
+                </option>
+            </select>
+            <label for="cantidadInput">Cantidad:</label>
+            <input type="number" id="cantidadInput" class="form-control" min="1" required>
+            <br>
+            <button type="submit">Agregar</button>
+            <button type="button" onclick="cerrarModalAgregarProducto()">Cancelar</button>
+        </form>
+    </div>
 </div>
 </body>
 <script th:inline="javascript">
     function modificarCantidad(button, cambio) {
-        const row = button.closest('tr');
         const idProducto = button.getAttribute('data-id');
-        const idSucursal = row.getAttribute('data-sucursal');
+        const idSucursal = button.getAttribute('data-sucursal');
         const cantidadSpan = document.getElementById(`cantidad-${idProducto}`);
         let cantidad = parseInt(cantidadSpan.textContent);
         cantidad = Math.max(0, cantidad + cambio);
@@ -75,11 +113,10 @@
     }
 
     function eliminarProducto(button) {
-        const id = button.getAttribute('data-id');
-        const row = button.closest('tr');
-        const idSucursal = row.getAttribute('data-sucursal');
+        const idProducto = button.getAttribute('data-id');
+        const idSucursal = button.getAttribute('data-sucursal');
 
-        if (!confirm('¿Estás seguro de que deseas eliminar este producto del pedido?')) {
+        if (!confirm('¿Estás seguro de eliminar este producto del pedido?')) {
             return;
         }
 
@@ -90,15 +127,69 @@
                 [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
                     document.querySelector('meta[name="_csrf"]').getAttribute('content')
             },
-            body: `idProducto=${id}&idSucursal=${idSucursal}`
+            body: `idProducto=${idProducto}&idSucursal=${idSucursal}`
         })
         .then(response => response.text())
         .then(data => {
-            console.log(data);
-            // Eliminar la fila de la tabla
+            // Eliminar visualmente la fila de la tabla si fue exitoso
+            const row = button.closest('tr');
             row.remove();
         })
         .catch(error => console.error('Error al eliminar producto:', error));
+    }
+
+    // Modal Pedido
+    function mostrarModalPedido() {
+        document.getElementById('modalPedido').style.display = 'block';
+    }
+
+    function cerrarModalPedido() {
+        document.getElementById('modalPedido').style.display = 'none';
+    }
+
+    function confirmarPedido() {
+        // Aquí va la lógica para realizar el pedido real, hay que tomar la lista de los
+        // productos con sus cantidades y el proveedor que se seleccione en el combo
+        alert("Pedido confirmado.");
+        cerrarModalPedido();
+    }
+
+    // Modal Agregar Productos
+    function mostrarModalAgregarProducto() {
+        document.getElementById('modalAgregarProducto').style.display = 'block';
+    }
+
+    function cerrarModalAgregarProducto() {
+        document.getElementById('modalAgregarProducto').style.display = 'none';
+    }
+
+    function agregarProducto(event) {
+        event.preventDefault();
+
+        const idProducto = document.getElementById('productoSelect').value;
+        const cantidad = document.getElementById('cantidadInput').value;
+        const idSucursal = /*[[${idSucursal}]]*/ '0';
+
+        fetch('/productos-pedidos/agregar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                    document.querySelector('meta[name="_csrf"]').getAttribute('content')
+            },
+            body: `idProducto=${idProducto}&idSucursal=${idSucursal}&cantidad=${cantidad}`
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error al agregar producto:', error);
+            alert('Error al agregar producto');
+        });
+
+        cerrarModalAgregarProducto();
     }
 </script>
 </html>

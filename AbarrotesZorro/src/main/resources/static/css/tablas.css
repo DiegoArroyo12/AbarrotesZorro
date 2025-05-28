@@ -123,3 +123,46 @@ img {
     padding: 0.6rem;
     background-color: #808182;
 }
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    background-color: rgb(216, 42, 42);
+    padding: 2rem;
+    border: 5px solid black;
+    z-index: 1000;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.modal h2 {
+    color: black;
+    margin-top: 0;
+    font-size: 2rem;
+}
+
+.modal button {
+    margin: 1rem 0;
+    margin-bottom: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    background-color: orange;
+    cursor: pointer;
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.form-control {
+    width: 100%;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.add {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}

@@ -1,8 +1,12 @@
 package mx.unam.aragon.controller.proveedor;
 
+import jakarta.validation.Valid;
+import mx.unam.aragon.model.entity.ClienteEntity;
 import mx.unam.aragon.model.entity.ProductosPedidosEntity;
+import mx.unam.aragon.model.entity.ProveedorEntity;
 import mx.unam.aragon.model.entity.SucursalEntity;
 import mx.unam.aragon.model.entity.seriales.IdProductoSucursal;
+import mx.unam.aragon.repository.ProductoRepository;
 import mx.unam.aragon.repository.ProductosPedidosRepository;
 import mx.unam.aragon.repository.ProveedorRepository;
 import mx.unam.aragon.repository.SucursalRepository;
@@ -11,10 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +32,9 @@ public class ProveedorController {
 
     @Autowired
     ProductosPedidosRepository productosPedidosRepository;
+
+    @Autowired
+    ProductoRepository productoRepository;
 
     @Value("${imagenes.ruta}")
     private String imagenesPath;
@@ -46,8 +52,34 @@ public class ProveedorController {
         model.addAttribute("idSucursal", idSucursal);
         model.addAttribute("nombreSucursal", nombreSucursal);
         model.addAttribute("productosPedidos", productosPedidos);
+        model.addAttribute("proveedores", proveedorRepository.findAll());
+        model.addAttribute("productos", productoRepository.findAll());
 
         return "proveedor";
+    }
+
+    @GetMapping("/proveedor/nuevo")
+    public String mostrarFormularioProveedor(@RequestParam("idSucursal") Integer idSucursal, Model model) {
+        model.addAttribute("proveedor", new ProveedorEntity());
+        model.addAttribute("idSucursal", idSucursal);
+        return "nuevo_proveedor";
+    }
+
+    @PostMapping("/proveedor/guardar")
+    public String guardarProveedor(@RequestParam("idSucursal") Integer idSucursal,
+                                   @Valid @ModelAttribute("proveedor") ProveedorEntity proveedor,
+                                   BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            for (ObjectError error : result.getAllErrors()) {
+                System.out.println("Error: " + error.getDefaultMessage());
+            }
+            model.addAttribute("contenido", "Error al guardar proveedor");
+            return "nuevo_proveedor";
+        }
+
+        proveedorRepository.save(proveedor);
+        model.addAttribute("contenido", "Proveedor Creado Exitosamente");
+        return "redirect:/proveedor/pedidos?idSucursal=" + idSucursal;
     }
 
     @PostMapping("/productos-pedidos/actualizar")
@@ -76,11 +108,33 @@ public class ProveedorController {
     public ResponseEntity<String> eliminarProductoPedido(
             @RequestParam("idProducto") Long idProducto,
             @RequestParam("idSucursal") Long idSucursal) {
+
         IdProductoSucursal id = new IdProductoSucursal(idProducto, idSucursal);
         if (productosPedidosRepository.existsById(id)) {
             productosPedidosRepository.deleteById(id);
             return ResponseEntity.ok("Producto eliminado correctamente");
         }
         return ResponseEntity.badRequest().body("Producto no encontrado");
+    }
+
+    @PostMapping("/productos-pedidos/agregar")
+    @ResponseBody
+    public ResponseEntity<String> agregarProductoPedido(
+            @RequestParam("idProducto") Long idProducto,
+            @RequestParam("idSucursal") Long idSucursal,
+            @RequestParam("cantidad") Integer cantidad) {
+
+        IdProductoSucursal id = new IdProductoSucursal(idProducto, idSucursal);
+        if (productosPedidosRepository.existsById(id)) {
+            return ResponseEntity.badRequest().body("El producto ya existe en el pedido para esta sucursal");
+        }
+
+        ProductosPedidosEntity nuevoProducto = new ProductosPedidosEntity();
+        nuevoProducto.setId(id);
+        nuevoProducto.setCantidad(cantidad);
+
+        productosPedidosRepository.save(nuevoProducto);
+
+        return ResponseEntity.ok("Producto agregado correctamente");
     }
 }
