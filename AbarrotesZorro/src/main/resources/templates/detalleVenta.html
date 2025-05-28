@@ -26,7 +26,7 @@
         <p><strong>Hora de la compra:</strong> <span th:text="${hora}">--:--</span></p>
     </div>
 
-    <form method="POST" action="/venta/pdf">
+    <form method="POST" action="/venta/pdf" onsubmit="return confirmarVenta(this)">
         <input type="hidden" name="cliente" th:value="${clienteId}" />
         <input type="hidden" name="empleado" th:value="${idEmpleado}" />
         <input type="hidden" name="caja" th:value="${cajaId}" />
@@ -46,9 +46,7 @@
         <button type="submit">Confirmar venta</button>
     </form>
 
-    <form method="get" action="/cancelar-detalle-venta" style="margin-top: 10px;">
-        <button type="submit">Cancelar</button>
-    </form>
+    <button type="button" onclick="cancelarVenta()">Cancelar</button>
 
 </div>
 
@@ -83,6 +81,16 @@
         </section>
     </div>
 </div>
+<script>
+    function cancelarVenta() {
+        window.location.href = "/inicio";
+    }
+    function confirmarVenta(formulario) {
+        localStorage.removeItem('zorro_carrito');
+        localStorage.removeItem('zorro_cliente');
 
+        return true;
+    }
+</script>
 </body>
 </html>

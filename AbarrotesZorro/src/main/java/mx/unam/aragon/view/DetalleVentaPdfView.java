@@ -35,23 +35,48 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         List<DetalleVentaDTO> detalles = (List<DetalleVentaDTO>) model.get("detalles");
 
         Font tituloFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Color.RED.darker());
+        Font subtituloFont= FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, Color.BLACK);
         Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Color.BLACK);
         Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.BLACK);
 
-        Paragraph titulo = new Paragraph("DETALLE DE VENTA", tituloFont);
+        Paragraph titulo = new Paragraph("Abarrotes Zorro", tituloFont);
         titulo.setAlignment(Element.ALIGN_CENTER);
         titulo.setSpacingAfter(10f);
         document.add(titulo);
 
-        document.add(new Paragraph("Cliente: " + cliente, boldFont));
+        Paragraph titulo2 = new Paragraph("Gracias por su compra:", subtituloFont);
+        titulo2.setAlignment(Element.ALIGN_CENTER);
+        titulo2.setSpacingAfter(10f);
+        document.add(titulo2);
+
+
+        Paragraph p1 = new Paragraph("Cliente: " + cliente, boldFont);
+        p1.setAlignment(Element.ALIGN_CENTER);
+        document.add(p1);
+
         document.add(new Paragraph(" "));
-        document.add(new Paragraph("Empleado: " + empleado, boldFont));
-        document.add(new Paragraph("Caja: " + caja, boldFont));
-        document.add(new Paragraph("Sucursal: " + sucursal, boldFont));
+
+        Paragraph p2 = new Paragraph("Empleado: " + empleado, boldFont);
+        p2.setAlignment(Element.ALIGN_CENTER);
+        document.add(p2);
+
+        Paragraph p3 = new Paragraph("Caja: " + caja, boldFont);
+        p3.setAlignment(Element.ALIGN_CENTER);
+        document.add(p3);
+
+        Paragraph p4 = new Paragraph("Sucursal: " + sucursal, boldFont);
+        p4.setAlignment(Element.ALIGN_CENTER);
+        document.add(p4);
+
         document.add(new Paragraph(" "));
-        document.add(new Paragraph("Fecha: " + fecha, boldFont));
-        document.add(new Paragraph("Hora de la compra: " + hora, boldFont));
-        document.add(new Paragraph(" "));
+
+        Paragraph p5 = new Paragraph("Fecha: " + fecha, boldFont);
+        p5.setAlignment(Element.ALIGN_CENTER);
+        document.add(p5);
+
+        Paragraph p6 = new Paragraph("Hora: " + hora, boldFont);
+        p6.setAlignment(Element.ALIGN_CENTER);
+        document.add(p6);
 
         PdfPTable table = new PdfPTable(5);
         table.setWidths(new float[]{2, 4, 2, 2, 2});
@@ -89,10 +114,26 @@ public class DetalleVentaPdfView extends AbstractPdfView {
                 table.addCell(new PdfPCell(new Phrase("Error imagen", normalFont)));
             }
 
-            table.addCell(new PdfPCell(new Phrase(d.getNombre(), normalFont)));
-            table.addCell(new PdfPCell(new Phrase(String.valueOf(d.getCantidad()), normalFont)));
-            table.addCell(new PdfPCell(new Phrase(String.format("$%.2f", d.getPrecio()), normalFont)));
-            table.addCell(new PdfPCell(new Phrase(String.format("$%.2f", d.getSubtotal()), normalFont)));
+            PdfPCell nombreCell = new PdfPCell(new Phrase(d.getNombre(), normalFont));
+            nombreCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            nombreCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(nombreCell);
+
+            PdfPCell cantidadCell = new PdfPCell(new Phrase(String.valueOf(d.getCantidad()), normalFont));
+            cantidadCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cantidadCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cantidadCell);
+
+            PdfPCell precioCell = new PdfPCell(new Phrase(String.format("$%.2f", d.getPrecio()), normalFont));
+            precioCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            precioCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(precioCell);
+
+            PdfPCell subtotalCell = new PdfPCell(new Phrase(String.format("$%.2f", d.getSubtotal()), normalFont));
+            subtotalCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            subtotalCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(subtotalCell);
+
         }
 
         document.add(table);
