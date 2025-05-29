@@ -20,6 +20,7 @@
         </div>
     </header>
 
+
     <section class="tabla-productos">
         <table>
             <thead>
@@ -37,7 +38,9 @@
                 <td>
                     <button type="button" class="btn-less" th:attr="data-id=${producto.id.idProducto},data-sucursal=${producto.id.idSucursal}" onclick="modificarCantidad(this, -1)">-</button>
 
+
                     <span th:id="'cantidad-' + ${producto.id.idProducto}" th:text="${producto.cantidad}">0</span>
+
 
                     <button type="button" class="btn-more" th:attr="data-id=${producto.id.idProducto},data-sucursal=${producto.id.idSucursal}" onclick="modificarCantidad(this, 1)">+</button>
                 </td>
@@ -56,6 +59,7 @@
         </div>
     </section>
 
+
     <!-- Modal de Confirmación de Pedido -->
     <div id="modalPedido" class="modal">
         <h2>Selecciona el Proveedor</h2>
@@ -69,6 +73,7 @@
         <button onclick="confirmarPedido()">Confirmar Pedido</button>
         <button class="cancel" onclick="cerrarModalPedido()">Cancelar</button>
     </div>
+
 
     <div id="modalAgregarProducto" class="modal">
         <h2>Agregar Producto al Pedido</h2>
@@ -98,6 +103,7 @@
         cantidad = Math.max(0, cantidad + cambio);
         cantidadSpan.textContent = cantidad;
 
+
         fetch('/productos-pedidos/actualizar', {
             method: 'POST',
             headers: {
@@ -107,18 +113,21 @@
             },
             body: `idProducto=${idProducto}&idSucursal=${idSucursal}&cantidad=${cantidad}`
         })
-        .then(response => response.text())
-        .then(data => console.log(data))
-        .catch(error => console.error('Error al actualizar cantidad:', error));
+            .then(response => response.text())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error al actualizar cantidad:', error));
     }
+
 
     function eliminarProducto(button) {
         const idProducto = button.getAttribute('data-id');
         const idSucursal = button.getAttribute('data-sucursal');
 
+
         if (!confirm('¿Estás seguro de eliminar este producto del pedido?')) {
             return;
         }
+
 
         fetch('/productos-pedidos/eliminar', {
             method: 'POST',
@@ -129,46 +138,77 @@
             },
             body: `idProducto=${idProducto}&idSucursal=${idSucursal}`
         })
-        .then(response => response.text())
-        .then(data => {
-            // Eliminar visualmente la fila de la tabla si fue exitoso
-            const row = button.closest('tr');
-            row.remove();
-        })
-        .catch(error => console.error('Error al eliminar producto:', error));
+            .then(response => response.text())
+            .then(data => {
+                // Eliminar visualmente la fila de la tabla si fue exitoso
+                const row = button.closest('tr');
+                row.remove();
+            })
+            .catch(error => console.error('Error al eliminar producto:', error));
     }
+
 
     // Modal Pedido
     function mostrarModalPedido() {
         document.getElementById('modalPedido').style.display = 'block';
     }
 
+
     function cerrarModalPedido() {
         document.getElementById('modalPedido').style.display = 'none';
     }
 
+
     function confirmarPedido() {
-        // Aquí va la lógica para realizar el pedido real, hay que tomar la lista de los
-        // productos con sus cantidades y el proveedor que se seleccione en el combo
-        alert("Pedido confirmado.");
-        cerrarModalPedido();
+        const proveedorId = document.getElementById('proveedorSelect').value;
+        const idSucursal = /*[[${idSucursal}]]*/ '0';
+
+        fetch('/proveedor/enviar-pedido', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
+                    document.querySelector('meta[name="_csrf"]').getAttribute('content')
+            },
+            body: `idProveedor=${proveedorId}&idSucursal=${idSucursal}`
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Pedido enviado correctamente al proveedor.');
+                } else {
+                    response.text().then(msg => alert('Error: ' + msg));
+                }
+                cerrarModalPedido();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar el pedido.');
+            });
     }
+
+
+
+
 
     // Modal Agregar Productos
     function mostrarModalAgregarProducto() {
         document.getElementById('modalAgregarProducto').style.display = 'block';
     }
 
+
     function cerrarModalAgregarProducto() {
         document.getElementById('modalAgregarProducto').style.display = 'none';
     }
 
+
     function agregarProducto(event) {
         event.preventDefault();
+
 
         const idProducto = document.getElementById('productoSelect').value;
         const cantidad = document.getElementById('cantidadInput').value;
         const idSucursal = /*[[${idSucursal}]]*/ '0';
+
 
         fetch('/productos-pedidos/agregar', {
             method: 'POST',
@@ -179,15 +219,16 @@
             },
             body: `idProducto=${idProducto}&idSucursal=${idSucursal}&cantidad=${cantidad}`
         })
-        .then(response => response.text())
-        .then(data => {
-            alert(data);
-            location.reload();
-        })
-        .catch(error => {
-            console.error('Error al agregar producto:', error);
-            alert('Error al agregar producto');
-        });
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error al agregar producto:', error);
+                alert('Error al agregar producto');
+            });
+
 
         cerrarModalAgregarProducto();
     }
