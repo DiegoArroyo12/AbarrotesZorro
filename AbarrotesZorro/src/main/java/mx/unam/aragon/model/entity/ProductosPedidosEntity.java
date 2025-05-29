@@ -13,6 +13,7 @@ import mx.unam.aragon.model.entity.seriales.IdProductoSucursal;
 @NoArgsConstructor
 @Builder
 public class ProductosPedidosEntity {
+
     @EmbeddedId
     private IdProductoSucursal id;
 

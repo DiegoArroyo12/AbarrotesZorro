@@ -1,18 +1,14 @@
 package mx.unam.aragon.controller.proveedor;
 
 
+import com.lowagie.text.Font;
+import com.lowagie.text.pdf.PdfPTable;
 import jakarta.validation.Valid;
 import jakarta.mail.internet.MimeMessage;
+import mx.unam.aragon.model.entity.*;
+import mx.unam.aragon.repository.*;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import mx.unam.aragon.model.entity.ClienteEntity;
-import mx.unam.aragon.model.entity.ProductosPedidosEntity;
-import mx.unam.aragon.model.entity.ProveedorEntity;
-import mx.unam.aragon.model.entity.SucursalEntity;
 import mx.unam.aragon.model.entity.seriales.IdProductoSucursal;
-import mx.unam.aragon.repository.ProductoRepository;
-import mx.unam.aragon.repository.ProductosPedidosRepository;
-import mx.unam.aragon.repository.ProveedorRepository;
-import mx.unam.aragon.repository.SucursalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -31,7 +27,11 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -46,10 +46,14 @@ public class ProveedorController {
     @Autowired
     SucursalRepository sucursalRepository;
 
-
     @Autowired
     ProductosPedidosRepository productosPedidosRepository;
 
+    @Autowired
+    DetallePedidoRepository detallePedidoRepository;
+
+    @Autowired
+    PedidoRepository pedidoRepository;
 
     @Autowired
     ProductoRepository productoRepository;
@@ -178,57 +182,85 @@ public class ProveedorController {
     }
     @PostMapping("/proveedor/enviar-pedido")
     @ResponseBody
-    public ResponseEntity<String> enviarPedidoPorCorreo(@RequestParam("idProveedor") Long idProveedor,
-                                                        @RequestParam("idSucursal") Long idSucursal) {
-        // 1. Obtener proveedor
-        ProveedorEntity proveedor = proveedorRepository.findById(idProveedor).orElse(null);
-        if (proveedor == null || proveedor.getCorreo() == null) {
-            return ResponseEntity.badRequest().body("Proveedor no válido o sin correo");
-        }
-
-
-        // 2. Obtener productos del pedido
+    public ResponseEntity<String> enviarPedidoPorCorreo(@RequestParam("idSucursal") Long idSucursal,
+                                                        @RequestParam("idProveedor") Long idProveedor) {
         List<ProductosPedidosEntity> productosPedidos = productosPedidosRepository.findById_IdSucursal(idSucursal);
         if (productosPedidos.isEmpty()) {
-            return ResponseEntity.badRequest().body("No hay productos para este pedido");
+            return ResponseEntity.badRequest().body("No hay productos seleccionados para esta sucursal");
         }
 
+        ProveedorEntity proveedor = proveedorRepository.findById(idProveedor).orElse(null);
+        if (proveedor == null || proveedor.getCorreo() == null) {
+            return ResponseEntity.badRequest().body("Proveedor no encontrado o no tiene correo");
+        }
 
-        // 3. Generar PDF
-        ByteArrayOutputStream pdfStream = generarPdfDePedido(productosPedidos);
+        ByteArrayOutputStream pdfStream = generarPdfDeProductosPedidos(productosPedidos, proveedor);
 
-
-        // 4. Enviar correo
         try {
-            enviarCorreoConAdjunto(proveedor.getCorreo(), "Pedido de productos", "Adjunto encontrarás el pedido.", pdfStream);
+            enviarCorreoConAdjunto(
+                    proveedor.getCorreo(),
+                    "Pedido de productos",
+                    "Adjunto encontrarás el pedido.",
+                    pdfStream
+            );
             return ResponseEntity.ok("Pedido enviado por correo a " + proveedor.getCorreo());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("Error al enviar correo: " + e.getMessage());
         }
     }
-    private ByteArrayOutputStream generarPdfDePedido(List<ProductosPedidosEntity> productos) {
+
+
+    private void addCellHeader(PdfPTable table, String texto, Font font, Color backgroundColor) {
+        com.lowagie.text.pdf.PdfPCell cell = new com.lowagie.text.pdf.PdfPCell(new Paragraph(texto, font));
+        cell.setBackgroundColor(backgroundColor);
+        cell.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
+        cell.setPadding(5);
+        table.addCell(cell);
+    }
+
+    private ByteArrayOutputStream generarPdfDeProductosPedidos(List<ProductosPedidosEntity> productosPedidos, ProveedorEntity proveedor) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+
         try {
-            com.lowagie.text.Document document = new com.lowagie.text.Document();
-            com.lowagie.text.pdf.PdfWriter.getInstance(document, out);
+            Document document = new Document();
+            PdfWriter.getInstance(document, out);
             document.open();
-            document.add(new com.lowagie.text.Paragraph("Lista de Productos del Pedido"));
 
+            Paragraph titulo = new Paragraph("Abarrotes Zorro", new Font(Font.HELVETICA, 20, Font.BOLD, new Color(204, 0, 0)));
+            titulo.setAlignment(Paragraph.ALIGN_CENTER);
+            document.add(titulo);
 
-            for (ProductosPedidosEntity producto : productos) {
-                String nombre = producto.getProducto().getNombre();
-                int cantidad = producto.getCantidad();
-                document.add(new com.lowagie.text.Paragraph(nombre + " - Cantidad: " + cantidad));
+            document.add(new Paragraph("Proveedor: " + proveedor.getNombre()));
+            document.add(new Paragraph("Fecha: " + LocalDate.now()));
+            document.add(new Paragraph("Hora: " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))));
+            document.add(new Paragraph("\nPedido:\n", new Font(Font.HELVETICA, 14, Font.BOLD)));
+            document.add(new Paragraph("\n"));
+
+            PdfPTable table = new PdfPTable(2);
+            table.setWidthPercentage(100);
+            table.setWidths(new float[]{4f, 2f});
+
+            Font headerFont = new Font(Font.HELVETICA, 12, Font.BOLD);
+            Color headerColor = new Color(255, 204, 0);
+
+            addCellHeader(table, "Producto", headerFont, headerColor);
+            addCellHeader(table, "Cantidad", headerFont, headerColor);
+
+            for (ProductosPedidosEntity ppe : productosPedidos) {
+                table.addCell(ppe.getProducto().getNombre());
+                table.addCell(String.valueOf(ppe.getCantidad()));
             }
 
-
+            document.add(table);
             document.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return out;
     }
+
 
 
     @Autowired
