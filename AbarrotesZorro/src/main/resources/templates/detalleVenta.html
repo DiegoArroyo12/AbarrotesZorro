@@ -7,80 +7,86 @@
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="cliente-info">
-        <h2>Empleado:</h2>
-        <p th:text="${empleadoNombre}">Nombre empleado</p>
+<!-- CONTENEDOR FLEXIBLE PARA sidebar Y main-container -->
+<div class="layout-container">
 
-        <h3>Cliente:</h3>
-        <p th:text="${clienteNombre}">Nombre cliente</p>
+    <!-- SIDEBAR ROJA -->
+    <div class="sidebar">
+        <div class="cliente-info">
+            <h2>Empleado:</h2>
+            <p th:text="${empleadoNombre}">Nombre empleado</p>
 
-        <h3>Caja:</h3>
-        <p th:text="${cajaNombre}">Caja</p>
+            <h3>Cliente:</h3>
+            <p th:text="${clienteNombre}">Nombre cliente</p>
 
-        <h3>Sucursal:</h3>
-        <p th:text="${nombreSucursal}">Sucursal</p>
+            <h3>Caja:</h3>
+            <p th:text="${cajaNombre}">Caja</p>
 
-        <p><strong>Fecha de la compra:</strong> <span th:text="${fecha}">dd/mm/aaaa</span></p>
+            <h3>Sucursal:</h3>
+            <p th:text="${nombreSucursal}">Sucursal</p>
 
-        <p><strong>Hora de la compra:</strong> <span th:text="${hora}">--:--</span></p>
-    </div>
-
-    <form method="POST" action="/venta/pdf" onsubmit="return confirmarVenta(this)">
-        <input type="hidden" name="cliente" th:value="${clienteId}" />
-        <input type="hidden" name="empleado" th:value="${idEmpleado}" />
-        <input type="hidden" name="caja" th:value="${cajaId}" />
-
-        <input type="hidden" name="sucursal" th:value="${idSucursal}" />
-        <input type="hidden" name="fecha" th:value="${fecha}" />
-        <input type="hidden" name="hora" th:value="${hora}" />
-        <input type="hidden" name="total" th:value="${total}" />
-
-        <div th:each="p : ${productos}">
-            <input type="hidden" name="nombres[]" th:value="${p.nombre}" />
-            <input type="hidden" name="cantidades[]" th:value="${p.cantidad}" />
-            <input type="hidden" name="precios[]" th:value="${p.precio}" />
-            <input type="hidden" name="imagenes[]" th:value="${p.imagen}" />
+            <p><strong>Fecha de la compra:</strong> <span th:text="${fecha}">dd/mm/aaaa</span></p>
+            <p><strong>Hora de la compra:</strong> <span th:text="${hora}">--:--</span></p>
         </div>
 
-        <button type="submit">Confirmar venta</button>
-    </form>
+        <form method="POST" action="/venta/pdf" onsubmit="return confirmarVenta(this)">
+            <input type="hidden" name="cliente" th:value="${clienteId}" />
+            <input type="hidden" name="empleado" th:value="${idEmpleado}" />
+            <input type="hidden" name="caja" th:value="${cajaId}" />
+            <input type="hidden" name="sucursal" th:value="${idSucursal}" />
+            <input type="hidden" name="fecha" th:value="${fecha}" />
+            <input type="hidden" name="hora" th:value="${hora}" />
+            <input type="hidden" name="total" th:value="${total}" />
 
-    <button type="button" onclick="cancelarVenta()">Cancelar</button>
+            <div th:each="p : ${productos}">
+                <input type="hidden" name="nombres[]" th:value="${p.nombre}" />
+                <input type="hidden" name="cantidades[]" th:value="${p.cantidad}" />
+                <input type="hidden" name="precios[]" th:value="${p.precio}" />
+                <input type="hidden" name="imagenes[]" th:value="${p.imagen}" />
+            </div>
 
-</div>
+            <button type="submit">Confirmar venta</button>
+        </form>
 
-<div class="main-container">
-    <header class="detalle-header">
-        <span>Detalle de la Venta</span>
-    </header>
-
-    <div class="content-wrapper">
-        <section class="detalle-section">
-            <table>
-                <thead>
-                <tr>
-                    <th>Imagen</th>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio unitario</th>
-                    <th>Subtotal</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="p : ${productos}">
-                    <td><img th:src="${p.imagen}" alt="imagen" width="50"/></td>
-                    <td th:text="${p.nombre}"></td>
-                    <td th:text="${p.cantidad}"></td>
-                    <td th:text="${p.precio}"></td>
-                    <td th:text="${#numbers.formatDecimal(p.precio * p.cantidad, 1, 'COMMA', 2, 'POINT')}"></td>
-                </tr>
-                </tbody>
-            </table>
-            <div class="total" th:text="'Total: $' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}"></div>
-        </section>
+        <button type="button" onclick="cancelarVenta()">Cancelar</button>
     </div>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="main-container">
+        <header class="detalle-header">
+            <span>Detalle de la Venta</span>
+        </header>
+
+        <div class="content-wrapper">
+            <section class="detalle-section">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${productos}">
+                        <td><img th:src="${p.imagen}" alt="imagen" width="50"/></td>
+                        <td th:text="${p.nombre}"></td>
+                        <td th:text="${p.cantidad}"></td>
+                        <td th:text="${p.precio}"></td>
+                        <td th:text="${#numbers.formatDecimal(p.precio * p.cantidad, 1, 'COMMA', 2, 'POINT')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="total" th:text="'Total: $' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}"></div>
+            </section>
+        </div>
+    </div>
+
 </div>
+
+<!-- SCRIPTS -->
 <script>
     function cancelarVenta() {
         window.location.href = "/inicio";
@@ -88,9 +94,9 @@
     function confirmarVenta(formulario) {
         localStorage.removeItem('zorro_carrito');
         localStorage.removeItem('zorro_cliente');
-
         return true;
     }
 </script>
+
 </body>
 </html>

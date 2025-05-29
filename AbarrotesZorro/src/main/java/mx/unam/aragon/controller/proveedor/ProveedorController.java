@@ -233,7 +233,7 @@ public class ProveedorController {
 
             document.add(new Paragraph("Proveedor: " + proveedor.getNombre()));
             document.add(new Paragraph("Fecha: " + LocalDate.now()));
-            document.add(new Paragraph("Hora: " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))));
+            document.add(new Paragraph(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))));
             document.add(new Paragraph("\nPedido:\n", new Font(Font.HELVETICA, 14, Font.BOLD)));
             document.add(new Paragraph("\n"));
 
