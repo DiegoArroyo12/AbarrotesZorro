@@ -175,6 +175,7 @@
             .then(response => {
                 if (response.ok) {
                     alert('Pedido enviado correctamente al proveedor.');
+                    location.reload();
                 } else {
                     response.text().then(msg => alert('Error: ' + msg));
                 }

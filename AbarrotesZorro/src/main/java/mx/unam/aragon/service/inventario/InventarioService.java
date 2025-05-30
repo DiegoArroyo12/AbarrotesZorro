@@ -7,6 +7,7 @@ import java.util.List;
 public interface InventarioService {
     InventarioEntity save(InventarioEntity inventario);
     List<InventarioEntity> findAll();
-    void deleteById(Long id);
-    InventarioEntity findById(Long id);
+    void deleteById(Long idProducto, Long idSucursal);
+
+    InventarioEntity findById(Long idProducto, Long idSucursal);
 }

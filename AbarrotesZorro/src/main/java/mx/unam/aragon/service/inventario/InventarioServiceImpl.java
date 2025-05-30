@@ -1,6 +1,7 @@
 package mx.unam.aragon.service.inventario;
 
 import mx.unam.aragon.model.entity.InventarioEntity;
+import mx.unam.aragon.model.entity.seriales.IdProductoSucursal;
 import mx.unam.aragon.repository.InventarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,12 +31,14 @@ public class InventarioServiceImpl implements InventarioService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteById(Long idProducto, Long idSucursal) {
+        IdProductoSucursal id = new IdProductoSucursal(idProducto, idSucursal);
         inventarioRepository.deleteById(id);
     }
 
     @Override
-    public InventarioEntity findById(Long id) {
+    public InventarioEntity findById(Long idProducto, Long idSucursal) {
+        IdProductoSucursal id = new IdProductoSucursal(idProducto, idSucursal);
         Optional<InventarioEntity> op=inventarioRepository.findById(id);
         return op.orElse(null);
     }

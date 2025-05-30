@@ -1,6 +1,7 @@
 package mx.unam.aragon.repository;
 
 import mx.unam.aragon.model.entity.InventarioEntity;
+import mx.unam.aragon.model.entity.seriales.IdProductoSucursal;
 import mx.unam.aragon.model.entity.view.ProductoInventarioView;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface InventarioRepository extends JpaRepository<InventarioEntity, Long> {
+public interface InventarioRepository extends JpaRepository<InventarioEntity, IdProductoSucursal> {
     @Query("SELECT i FROM inventarios i WHERE i.sucursal.id = :idSucursal")
     List<InventarioEntity> findBySucursal(@Param("idSucursal") Integer idSucursal);
 

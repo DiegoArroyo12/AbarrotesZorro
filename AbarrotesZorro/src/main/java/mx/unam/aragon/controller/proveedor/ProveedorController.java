@@ -38,10 +38,8 @@ import java.util.List;
 @Controller
 public class ProveedorController {
 
-
     @Autowired
     ProveedorRepository proveedorRepository;
-
 
     @Autowired
     SucursalRepository sucursalRepository;
@@ -57,6 +55,9 @@ public class ProveedorController {
 
     @Autowired
     ProductoRepository productoRepository;
+
+    @Autowired
+    InventarioRepository inventarioRepository;
 
 
     @Value("${imagenes.ruta}")
@@ -203,6 +204,22 @@ public class ProveedorController {
                     "Adjunto encontrarás el pedido.",
                     pdfStream
             );
+            // Actualizar inventario después de enviar el correo
+            for (ProductosPedidosEntity pedido : productosPedidos) {
+                Long IdProducto = pedido.getProducto().getId();
+                Long IdSucursal = pedido.getSucursal().getId();
+                int cantidad = pedido.getCantidad();
+
+                InventarioEntity inventario = inventarioRepository.findById(new IdProductoSucursal(IdProducto, IdSucursal)).orElse(null);
+
+                if (inventario != null) {
+                    inventario.setStock(inventario.getStock() + cantidad);
+                    inventarioRepository.save(inventario);
+                }
+            }
+
+            // Eliminar productos pedidos después de enviar el correo
+            productosPedidosRepository.deleteAll(productosPedidos);
             return ResponseEntity.ok("Pedido enviado por correo a " + proveedor.getCorreo());
         } catch (Exception e) {
             e.printStackTrace();
