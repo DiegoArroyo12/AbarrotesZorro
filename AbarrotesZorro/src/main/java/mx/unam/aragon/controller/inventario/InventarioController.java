@@ -74,7 +74,7 @@ public class InventarioController {
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(username).orElse(null);
         if (empleado != null && empleado.getSucursal() != null) {
             model.addAttribute("sucursalEmpleadoId", empleado.getSucursal().getId());
-            model.addAttribute("nombreEmpleado", empleado.getNombre());
+            model.addAttribute("idEmpleado", empleado.getId());
         } else {
             model.addAttribute("sucursalEmpleadoId", -1); // Valor por defecto si no tiene sucursal
         }

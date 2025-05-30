@@ -31,6 +31,7 @@ import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -60,6 +61,9 @@ public class ProveedorController {
     @Autowired
     InventarioRepository inventarioRepository;
 
+    @Autowired
+    EmpleadoRepository empleadoRepository;
+
 
     @Value("${imagenes.ruta}")
     private String imagenesPath;
@@ -67,9 +71,8 @@ public class ProveedorController {
 
     @GetMapping("/proveedor/pedidos")
     public String mostrarProveedor(@RequestParam("idSucursal") Integer idSucursal,
-                                   @RequestParam("nombreEmpleado") String nombreEmpleado,
+                                   @RequestParam("idEmpleado") Integer idEmpleado,
                                    Model model) {
-
 
         String nombreSucursal = sucursalRepository.findById(Long.valueOf(idSucursal))
                 .map(SucursalEntity::getNombre)
@@ -78,6 +81,12 @@ public class ProveedorController {
         String direccionSucursal = sucursalRepository.findById(Long.valueOf(idSucursal))
                 .map(SucursalEntity::getUbicacion)
                 .orElse("Dirección no encontrada");
+
+        EmpleadoEntity empleado = empleadoRepository.findById(Long.valueOf(idEmpleado)).orElse(null);
+        if (empleado != null) {
+            model.addAttribute("nombreEmpleado", empleado.getNombre());
+            model.addAttribute("idEmpleado", empleado.getId());
+        }
 
         List<ProductosPedidosEntity> productosPedidos = productosPedidosRepository.findAll();
 
@@ -88,7 +97,6 @@ public class ProveedorController {
         model.addAttribute("productosPedidos", productosPedidos);
         model.addAttribute("proveedores", proveedorRepository.findAll());
         model.addAttribute("productos", productoRepository.findAll());
-        model.addAttribute("nombreEmpleado", nombreEmpleado);
 
         return "proveedor";
     }
@@ -191,6 +199,7 @@ public class ProveedorController {
     @ResponseBody
     public ResponseEntity<String> enviarPedidoPorCorreo(@RequestParam("idSucursal") Long idSucursal,
                                                         @RequestParam("idProveedor") Long idProveedor,
+                                                        @RequestParam("idEmpleado") Integer idEmpleado,
                                                         @RequestParam("nombreEmpleado") String nombreEmpleado,
                                                         @RequestParam("nombreSucursal") String nombreSucursal,
                                                         @RequestParam("direccionSucursal") String direccionSucursal) {
@@ -213,6 +222,28 @@ public class ProveedorController {
                     "Adjunto encontrarás el pedido.",
                     pdfStream
             );
+
+
+            // Crear un nuevo pedido
+            PedidoEntity nuevoPedido = new PedidoEntity();
+            EmpleadoEntity empleado = empleadoRepository.findById(Long.valueOf(idEmpleado)).orElse(null);
+            if (empleado != null) {
+                nuevoPedido.setEmpleado(empleado);
+            }
+            nuevoPedido.setFecha(LocalDateTime.now());
+            nuevoPedido.setProveedor(proveedor);
+            pedidoRepository.save(nuevoPedido);
+
+            // Crear los detalles del pedido
+            for (ProductosPedidosEntity productoPedido : productosPedidos) {
+                DetallePedidoEntity detalle = new DetallePedidoEntity();
+                detalle.setPedido(nuevoPedido);
+                detalle.setProducto(productoPedido.getProducto());
+                detalle.setCantidad(productoPedido.getCantidad());
+                detallePedidoRepository.save(detalle);
+            }
+
+
             // Actualizar inventario después de enviar el correo
             for (ProductosPedidosEntity pedido : productosPedidos) {
                 Long IdProducto = pedido.getProducto().getId();

@@ -7,6 +7,7 @@
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <link th:href="@{/css/tablas.css}" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/abarrotes.ico}">
     <title>Proveedor</title>
 </head>
 <body>
@@ -163,6 +164,7 @@
         const proveedorId = document.getElementById('proveedorSelect').value;
         const idSucursal = /*[[${idSucursal}]]*/ '0';
         const nombreEmpleado = /*[[${nombreEmpleado}]]*/ 'Empleado';
+        const idEmpleado = /*[[${idEmpleado}]]*/ 'idEmpleado';
         const nombreSucursal = /*[[${nombreSucursal}]]*/ 'Sucursal';
         const direccionSucursal = /*[[${direccionSucursal}]]*/ 'Dirección';
 
@@ -173,7 +175,7 @@
                 [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
                     document.querySelector('meta[name="_csrf"]').getAttribute('content')
             },
-            body: `idProveedor=${proveedorId}&idSucursal=${idSucursal}&nombreEmpleado=${encodeURIComponent(nombreEmpleado)}&nombreSucursal=${encodeURIComponent(nombreSucursal)}&direccionSucursal=${encodeURIComponent(direccionSucursal)}`
+            body: `idProveedor=${proveedorId}&idSucursal=${idSucursal}&nombreEmpleado=${encodeURIComponent(nombreEmpleado)}&nombreSucursal=${encodeURIComponent(nombreSucursal)}&direccionSucursal=${encodeURIComponent(direccionSucursal)}&idEmpleado=${encodeURIComponent(idEmpleado)}`
         })
             .then(response => {
                 if (response.ok) {

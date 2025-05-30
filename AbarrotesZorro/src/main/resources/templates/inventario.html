@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="_csrf" th:content="${_csrf.token}" />
   <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-
+  <link rel="icon" type="image/x-icon" th:href="@{/img/abarrotes.ico}">
   <link th:href="@{/css/tablas.css}" rel="stylesheet">
   <title>Inventario</title>
 </head>
@@ -16,7 +16,7 @@
     <h1>Inventario de la <span th:text="${nombreSucursal}">Nombre Sucursal</span></h1>
     <div class="columns">
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
-      <button th:if="${sucursalEmpleadoId == idSucursal}" th:attr="onclick=|window.location.href='/proveedor/pedidos?idSucursal=${idSucursal}&nombreEmpleado=${nombreEmpleado}'|" sec:authorize="hasAuthority('Gerente')">Pedido a Proveedor</button>
+      <button th:if="${sucursalEmpleadoId == idSucursal}" th:attr="onclick=|window.location.href='/proveedor/pedidos?idSucursal=${idSucursal}&idEmpleado=${idEmpleado}'|" sec:authorize="hasAuthority('Gerente')">Pedido a Proveedor</button>
       <button th:if="${sucursalEmpleadoId == idSucursal}" th:onclick="'window.location.href=\'/inventario/nuevo?idSucursal=' + ${idSucursal} + '\''" sec:authorize="hasAuthority('Gerente')">Agregar Producto</button>
       <button th:if="${sucursalEmpleadoId == idSucursal}"
               th:onclick="'location.href=\'/inventario/descargar-excel?idSucursal=' + ${idSucursal} + '\''"
