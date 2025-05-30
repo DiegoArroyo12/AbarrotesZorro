@@ -60,7 +60,7 @@
               th:if="${sucursalEmpleadoId == idSucursal}">
             <button id="edit" th:attr="data-id=${producto.id}" onclick="editarProducto(this)" class="btn-edit">Editar</button>
             <button id="save" th:attr="data-id=${producto.id}" onclick="guardarProducto(this)" style="display:none;" class="btn-edit">Guardar</button>
-            <button id="delete" th:attr="data-id=${producto.id}" onclick="eliminarProducto(this)" class="btn-delete">Eliminar</button>
+            <button id="delete" th:attr="data-id=${producto.id},data-sucursal=${idSucursal}" onclick="eliminarProducto(this)" class="btn-delete">Eliminar</button>
             <button id="cancel" th:attr="data-id=${producto.id}" onclick="cancelarEdicion(this)" style="display:none;" class="btn-delete">Cancelar</button>
           </td>
         </tr>
@@ -161,6 +161,37 @@
 
     row.querySelectorAll('input, select').forEach(elem => elem.style.display = 'none');
     row.querySelectorAll('span').forEach(span => span.style.display = 'inline');
+  }
+
+  // Eliminar Producto
+  function eliminarProducto(button) {
+    const id = button.getAttribute('data-id');
+    const idSucursal = button.getAttribute('data-sucursal');
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+      fetch('/inventario/eliminar?id=' + id + '&idSucursal=' + idSucursal, {
+        method: 'DELETE',
+        headers: {
+          [csrfHeader]: csrfToken
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          alert(data.mensaje);
+          location.reload();
+        } else {
+          alert(data.mensaje);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar el producto');
+      });
+    }
   }
 </script>
 </html>

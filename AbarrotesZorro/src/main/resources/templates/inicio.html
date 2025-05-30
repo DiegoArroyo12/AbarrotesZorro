@@ -43,10 +43,10 @@
         <h4 id="nombreCliente" th:text="${nombreCliente}">Nombre del Cliente</h4>
 
         <label class="l_cli" for="correo">Correo: </label>
-        <input class="i_cli" type="email" id="correo">
+        <input class="i_cli" type="email" id="correo" onkeydown="if(event.key === 'Enter') { event.preventDefault(); buscarCliente(); }">
 
         <label class="l_cli" for="telefono">Teléfono:</label>
-        <input class="i_cli" type="text" id="telefono" maxlength="12" oninput="formatearTelefono(this)">
+        <input class="i_cli" type="text" id="telefono" maxlength="12" oninput="formatearTelefono(this)" onkeydown="if(event.key === 'Enter') { event.preventDefault(); buscarCliente(); }">
 
         <button class="button_cliente" onclick="buscarCliente()">Buscar Cliente</button>
         <button class="button_cliente" th:onclick="'window.location.href=\'' + @{/cliente/nuevo-cliente} + '\''">
@@ -55,7 +55,7 @@
     </div>
 
     <form class="side-footer" th:action="@{/custom-logout}" method="get">
-        <button type="submit">Cerrar Sesión</button>
+        <button type="submit" onclick="borrarLocalStorage()">Cerrar Sesión</button>
     </form>
 </div>
 
@@ -88,11 +88,12 @@
             <div class="precio-producto">$0</div>
             <div class="cantidad-control">
                 <button class="menos">-</button>
-                <span class="cantidad">0</span>
+                <input class="cantidad" type="number" min="0" value="0" />
                 <span>/</span>
                 <span class="stock">0</span>
                 <button class="mas">+</button>
             </div>
+            <div class="agotado-msg">Agotado</div>
         </div>
     </div>
 </div>
@@ -187,6 +188,7 @@
 
     function crearProductos() {
         productos.forEach((producto, i) => {
+            // Mostrar todos los productos, incluso los de stock 0
             cantidades[i] = 0;
 
             const clon = plantillaProducto.cloneNode(true);
@@ -197,12 +199,41 @@
             clon.querySelector(".precio-producto").textContent = `$${producto.precio}`;
             clon.querySelector(".stock").textContent = producto.stock;
             clon.querySelector(".imagen-producto").src = producto.imagen;
-            const cantidadSpan = clon.querySelector(".cantidad");
+            const cantidadInput = clon.querySelector(".cantidad");
+
+            // Inicializamos el input
+            cantidadInput.value = 0;
+            cantidadInput.min = 0;
+
+            // Si el producto está agotado, aplicar estilos y deshabilitar controles
+            if (producto.stock === 0) {
+                clon.style.opacity = "0.5";
+                clon.querySelector(".cantidad").disabled = true;
+                clon.querySelector(".mas").disabled = true;
+                clon.querySelector(".menos").disabled = true;
+                clon.querySelector(".agotado-msg").style.display = "block";
+            }
+
+            // Evento para cuando se escribe o cambia la cantidad
+            cantidadInput.addEventListener("input", () => {
+                let valor = parseInt(cantidadInput.value);
+
+                if (isNaN(valor) || valor < 0) {
+                    valor = 0;
+                } else if (valor > producto.stock) {
+                    valor = producto.stock;
+                    alert("No hay más stock disponible para este producto.");
+                }
+
+                cantidades[i] = valor;
+                cantidadInput.value = valor; // corregimos el input por si hubo ajuste
+                actualizarCarrito();
+            });
 
             clon.querySelector(".mas").addEventListener("click", () => {
                 if (cantidades[i] < producto.stock) {
                     cantidades[i]++;
-                    cantidadSpan.textContent = cantidades[i];
+                    cantidadInput.value = cantidades[i];
                     actualizarCarrito();
                 } else {
                     alert("No hay más stock disponible para este producto.");
@@ -212,7 +243,7 @@
             clon.querySelector(".menos").addEventListener("click", () => {
                 if (cantidades[i] > 0) {
                     cantidades[i]--;
-                    cantidadSpan.textContent = cantidades[i];
+                    cantidadInput.value = cantidades[i];
                     actualizarCarrito();
                 }
             });
@@ -383,12 +414,16 @@
         const cantidadSpans = document.querySelectorAll(".cantidad");
         cantidadSpans.forEach(span => span.textContent = '0');
         localStorage.removeItem('zorro_cliente');
-
+        localStorage.removeItem('zorro_carrito');
     }
+
     function guardarCajaLocalStorage(idCaja) {
         localStorage.setItem("cajaSeleccionada", idCaja);
     }
 
+    function borrarLocalStorage() {
+        localStorage.clear();
+    }
 </script>
 </body>
 </html>

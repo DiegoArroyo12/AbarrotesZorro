@@ -22,7 +22,8 @@
             <input type="text" id="nombre" name="nombre"
                    th:field="*{nombre}"
                    th:class="${#fields.hasErrors('nombre')} ? 'form-control is-invalid' : 'form-control'"
-                   placeholder="Ej. Juan Pérez">
+                   placeholder="Ej. Juan Pérez"
+                   required>
         </div>
 
         <!-- Correo -->
@@ -31,7 +32,8 @@
             <input type="email" id="correo" name="correo"
                    th:field="*{correo}"
                    th:class="${#fields.hasErrors('correo')} ? 'form-control is-invalid' : 'form-control'"
-                   placeholder="ejemplo@correo.com">
+                   placeholder="ejemplo@correo.com"
+                   required>
         </div>
 
         <!-- Teléfono -->
@@ -41,7 +43,8 @@
                    oninput="formatearTelefono(this)"
                    th:field="*{telefono}"
                    th:class="${#fields.hasErrors('telefono')} ? 'form-control is-invalid' : 'form-control'"
-                   placeholder="Ej. 55 1234 5678">
+                   placeholder="Ej. 55 1234 5678"
+                   required>
         </div>
 
         <div class="text-center">

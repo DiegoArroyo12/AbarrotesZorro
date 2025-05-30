@@ -16,7 +16,8 @@ public interface DetalleVentaRepository extends JpaRepository<DetalleVentaEntity
             "JOIN v.cliente cl " +
             "JOIN e.sucursal s " +
             "JOIN v.caja c " +
-            "WHERE s.id = :idSucursal")
+            "WHERE s.id = :idSucursal " +
+            "ORDER BY v.id DESC")
     List<VentaResumenDTO> findResumenesBySucursal(@Param("idSucursal") Integer idSucursal);
 
     @Query("SELECT new mx.unam.aragon.model.dto.ProductoVentaDTO(p.nombre, dv.precioUnitario, dv.cantidad, p.imagen, dv.id) " +

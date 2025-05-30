@@ -29,13 +29,14 @@
       <label for="nombre" class="form-label">Nombre del Producto:</label>
       <input type="text" id="nombre" name="nombre"
              th:field="*{nombre}"
-             class="form-control">
+             class="form-control"
+             required>
     </div>
 
     <!-- Imagen -->
     <div>
       <label for="imagen" class="form-label">Imagen:</label>
-      <input type="file" id="imagen" name="archivoImagen" accept="image/*" class="form-control">
+      <input type="file" id="imagen" name="archivoImagen" accept="image/*" class="form-control" required>
     </div>
 
     <!-- Precio -->
@@ -43,13 +44,14 @@
       <label for="precio" class="form-label">Precio:</label>
       <input type="text" id="precio" name="precio"
              th:field="*{precio}"
-             class="form-control">
+             class="form-control"
+             required>
     </div>
 
     <!-- Stock -->
     <div>
       <label for="stock" class="form-label">Stock:</label>
-      <input type="text" id="stock" name="stock" class="form-control">
+      <input type="text" id="stock" name="stock" class="form-control" required>
     </div>
 
     <!-- Botones -->

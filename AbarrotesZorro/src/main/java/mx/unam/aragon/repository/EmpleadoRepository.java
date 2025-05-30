@@ -11,4 +11,5 @@ public interface EmpleadoRepository extends JpaRepository<EmpleadoEntity,Long> {
 
     List<EmpleadoEntity> findBySucursalIdAndActivoTrue(Integer idSucursal);
 
+    boolean existsByUsuario(String usuario);
 }

@@ -16,6 +16,10 @@
       </ul>
     </div>
 
+    <div th:if="${contenido != null}" class="alert alert-danger">
+      <p th:text="${contenido}"></p>
+    </div>
+
     <!-- Usuario Actual -->
     <input type="hidden" name="idUsuarioActual" th:value="${idUsuarioActual}" />
 
@@ -26,7 +30,8 @@
              th:field="*{nombre}"
              oninput="formatearCampos(this)"
              th:class="${#fields.hasErrors('nombre')} ? 'form-control is-invalid' : 'form-control'"
-             placeholder="Ej. Juan Pérez">
+             placeholder="Ej. Juan Pérez"
+             required>
     </div>
 
     <!-- Usuario -->

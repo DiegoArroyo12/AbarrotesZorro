@@ -92,6 +92,16 @@ public class EmpleadoController {
             return "nuevo_empleado";
         }
 
+        // Validar que el nombre de usuario no esté repetido
+        if (empleadoRepository.existsByUsuario(empleado.getUsuario())) {
+            model.addAttribute("contenido", "El nombre de usuario ya existe. Elige otro.");
+            model.addAttribute("sucursales", sucursalRepository.findAll());
+            model.addAttribute("roles", rolRepository.findAll());
+            model.addAttribute("idUsuarioActual", idUsuarioActual);
+            model.addAttribute("idSucursal", sucursalId);
+            return "nuevo_empleado";
+        }
+
         SucursalEntity sucursal = sucursalRepository.findById(sucursalId).orElse(null);
         RolEntity rol = rolRepository.findById(rolId).orElse(null);
 

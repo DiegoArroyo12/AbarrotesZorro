@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Optional;
 
 @Controller
 public class InventarioController {
@@ -110,7 +111,9 @@ public class InventarioController {
                 producto.setImagen("/img/productos/" + nombreArchivo);
             }
 
-            ProductoEntity productoGuardado = productoRepository.save(producto);
+            ProductoEntity productoGuardado;
+            Optional<ProductoEntity> productoExistente = productoRepository.findByNombre(producto.getNombre());
+            productoGuardado = productoExistente.orElseGet(() -> productoRepository.save(producto));
 
             InventarioEntity inventario = new InventarioEntity();
             IdProductoSucursal idProductoSucursal = new IdProductoSucursal(productoGuardado.getId(), Long.valueOf(idSucursal));
@@ -214,9 +217,9 @@ public class InventarioController {
 
         sheet.createRow(0).createCell(0).setCellValue("Sucursal: " + nombreSucursal);
         sheet.createRow(1).createCell(0).setCellValue("Empleado: " + nombreEmpleado);
-        sheet.createRow(2).createCell(0).setCellValue("Fecha y Hora:" + fecha);
+        sheet.createRow(2).createCell(0).setCellValue("Fecha y Hora: " + fecha);
         Row headerRow = sheet.createRow(4);
-        headerRow.createCell(0).setCellValue("Nombre");
+        headerRow.createCell(0).setCellValue("Producto");
         headerRow.createCell(1).setCellValue("Stock");
         headerRow.createCell(2).setCellValue("Precio");
 
@@ -236,6 +239,23 @@ public class InventarioController {
         response.setHeader("Content-Disposition", "attachment; filename=inventario_sucursal_" + idSucursal + ".xlsx");
         workbook.write(response.getOutputStream());
         workbook.close();
+    }
+
+    @DeleteMapping("/inventario/eliminar")
+    @ResponseBody
+    public Map<String, String> eliminarProducto(@RequestParam("id") Long idProducto,
+                                                @RequestParam("idSucursal") Long idSucursal) {
+        Map<String, String> respuesta = new HashMap<>();
+        try {
+            IdProductoSucursal id = new IdProductoSucursal(idProducto, idSucursal);
+            inventarioRepository.deleteById(id);
+            respuesta.put("status", "ok");
+            respuesta.put("mensaje", "Producto eliminado del inventario de esta sucursal");
+        } catch (Exception e) {
+            respuesta.put("status", "error");
+            respuesta.put("mensaje", "No se pudo eliminar el producto");
+        }
+        return respuesta;
     }
 
 }
