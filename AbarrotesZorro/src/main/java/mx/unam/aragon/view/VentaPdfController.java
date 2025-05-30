@@ -37,12 +37,16 @@ public class VentaPdfController {
     @Autowired private CajaRepository cajaRepository;
     @Autowired private SucursalRepository sucursalRepository;
     @Autowired private ProductosPedidosRepository productosPedidosRepository;
+    @Autowired private InventarioRepository inventarioRepository;
 
     @Value("${correo.usuario}")
     private String fromEmail;
 
     @Value("${correo.contrasena}")
     private String emailPassword;
+
+    @Value("${imagenes.ruta}")
+    private String imagenesPath;
 
     @PostMapping("/venta/pdf")
     public ModelAndView generarPdf(
@@ -118,15 +122,26 @@ public class VentaPdfController {
                             .build();
                     productosPedidosRepository.save(nuevo);
                 }
+
+                // Restar del Inventario
+                Optional<InventarioEntity> inventarioOpt = inventarioRepository.findById(id);
+                if (inventarioOpt.isPresent()) {
+                    InventarioEntity inventario = inventarioOpt.get();
+                    int nuevoStock = inventario.getStock() - cantidades.get(i);
+                    inventario.setStock(Math.max(nuevoStock, 0)); // Evitar stock negativo
+                    inventarioRepository.save(inventario);
+                }
             }
         }
 
         // Modelo para el PDF y correo
         Map<String, Object> model = new HashMap<>();
+        model.put("rutaLocal", imagenesPath);
         model.put("cliente", clienteEntity.map(ClienteEntity::getNombre).orElse("Desconocido"));
         model.put("empleado", empleadoEntity.map(EmpleadoEntity::getNombre).orElse("Desconocido"));
         model.put("caja", caja);
         model.put("sucursal", sucursalEntity.map(SucursalEntity::getNombre).orElse("Desconocido"));
+        model.put("direccion", sucursalEntity.map(SucursalEntity::getUbicacion).orElse("Desconocida"));
         model.put("fecha", fecha);
         model.put("hora", hora);
         model.put("detalles", detallesDTO);

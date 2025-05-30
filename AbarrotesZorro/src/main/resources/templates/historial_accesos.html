@@ -12,8 +12,7 @@
   <header class="header">
     <h1>Accesos a <span th:text="${nombreSucursal}">Nombre Sucursal</span></h1>
     <div class="acciones">
-      <button type="button"
-              th:attr="onclick=|window.location.href='/empleados?idSucursal=' + [[${idSucursal}]]|">
+      <button th:onclick="'location.href=\'' + @{/empleados(idSucursal=${idSucursal}, idUsuario=${idUsuarioActual})} + '\''">
         Volver
       </button>
     </div>

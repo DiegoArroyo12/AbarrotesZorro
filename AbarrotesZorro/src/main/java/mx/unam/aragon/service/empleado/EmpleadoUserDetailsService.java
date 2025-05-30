@@ -34,10 +34,6 @@ public class EmpleadoUserDetailsService implements UserDetailsService {
                 .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
                 .collect(Collectors.toList());
 
-        return new org.springframework.security.core.userdetails.User(
-                empleado.getUsuario(),
-                empleado.getPassword_hash(),
-                authorities
-        );
+        return new EmpleadoUserDetails(empleado);
     }
 }

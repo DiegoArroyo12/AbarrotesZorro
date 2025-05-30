@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/registro-acceso").permitAll()
                         .requestMatchers(HttpMethod.POST, "/venta/pdf").permitAll()
                         .requestMatchers(HttpMethod.GET, "/venta/pdf").permitAll()
-                        .requestMatchers("/inicio", "/abarrotes/**", "/cliente/**", "/inventario").authenticated()
+                        .requestMatchers("/inicio", "/abarrotes/**", "/cliente/**", "/inventario", "/empleados/**").authenticated()
                         .anyRequest().authenticated()
 
                 )

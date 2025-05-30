@@ -19,13 +19,16 @@ public class HistorialAccesosController {
     SucursalRepository sucursalRepository;
 
     @GetMapping("empleados/historial_accesos")
-    public String mostrarAccesos(@RequestParam("idSucursal") String idSucursal, Model model) {
+    public String mostrarAccesos(@RequestParam("idSucursal") String idSucursal,
+                                 @RequestParam("idUsuario") Long idUsuario,
+                                 Model model) {
         // Nombre de sucursal
         String nombreSucursal = sucursalRepository.findById(Long.valueOf(idSucursal)).map(SucursalEntity::getNombre).orElse("Nombre no encontrado");
 
         // Accesos
         model.addAttribute("accesos", historialAccesoRepository.findBySucursalWithDetails(Integer.parseInt(idSucursal)));
         model.addAttribute("nombreSucursal", nombreSucursal);
+        model.addAttribute("idUsuarioActual", idUsuario);
         model.addAttribute("idSucursal", idSucursal);
         return "historial_accesos";
     }

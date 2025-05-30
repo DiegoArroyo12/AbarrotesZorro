@@ -14,8 +14,8 @@
     <div class="acciones">
       <button onclick="location.href='/inicio'">Volver a Inicio</button>
       <div sec:authorize="hasAuthority('Gerente')" class="buttons">
-        <button th:onclick="'window.location.href=\'/empleados/nuevo?idSucursal=' + ${idSucursal} + '\''">Agregar Empleado</button>
-        <button th:onclick="'window.location.href=\'/empleados/historial_accesos?idSucursal=' + ${idSucursal} + '\''">Historial de Accesos</button>
+        <button th:onclick="'location.href=\'' + @{/empleados/nuevo(idSucursal=${idSucursal}, idUsuario=${idUsuarioActual})} + '\''">Agregar Empleado</button>
+        <button th:onclick="'location.href=\'' + @{/empleados/historial_accesos(idSucursal=${idSucursal}, idUsuario=${idUsuarioActual})} + '\''">Historial de Accesos</button>
       </div>
     </div>
   </header>
@@ -51,9 +51,9 @@
           </select>
         </td>
         <td>
-          <button id="edit" th:attr="data-id=${empleado.id}" onclick="editarEmpleado(this)" class="btn-edit">Editar</button>
+          <button id="edit" th:if="${empleado.id != idUsuarioActual}" th:attr="data-id=${empleado.id}" onclick="editarEmpleado(this)" class="btn-edit">Editar</button>
           <button id="save" th:attr="data-id=${empleado.id}" onclick="guardarEmpleado(this)" style="display:none;" class="btn-edit">Guardar</button>
-          <button id="delete" th:attr="data-id=${empleado.id}" onclick="eliminarEmpleado(this)" class="btn-delete">Eliminar</button>
+          <button id="delete" th:if="${empleado.id != idUsuarioActual}" th:attr="data-id=${empleado.id}" onclick="eliminarEmpleado(this)" class="btn-delete">Eliminar</button>
           <button id="cancel" th:attr="data-id=${empleado.id}" onclick="cancelarEdicion(this)" style="display:none;" class="btn-delete">Cancelar</button>
         </td>
       </tr>

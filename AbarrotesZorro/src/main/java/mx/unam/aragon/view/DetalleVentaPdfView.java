@@ -5,12 +5,15 @@ import com.lowagie.text.Font;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.*;
 import mx.unam.aragon.model.dto.DetalleVentaDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.view.document.AbstractPdfView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +27,11 @@ public class DetalleVentaPdfView extends AbstractPdfView {
                                     HttpServletRequest request,
                                     HttpServletResponse response) throws Exception {
 
-
+        String rutaBaseLocal = (String) model.get("rutaLocal");
         String cliente = (String) model.get("cliente");
         String empleado = (String) model.get("empleado");
         String sucursal = (String) model.get("sucursal");
+        String direccion = (String) model.get("direccion");
         String fecha = (String) model.get("fecha");
         String hora = (String) model.get("hora");
         String caja = (String) model.get("caja");
@@ -35,28 +39,36 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         List<DetalleVentaDTO> detalles = (List<DetalleVentaDTO>) model.get("detalles");
 
         Font tituloFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Color.RED.darker());
-        Font subtituloFont= FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, Color.BLACK);
+        Font clienteFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 15, Color.BLACK);
         Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Color.BLACK);
         Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.BLACK);
 
-        Paragraph titulo = new Paragraph("Abarrotes Zorro", tituloFont);
-        titulo.setAlignment(Element.ALIGN_CENTER);
-        titulo.setSpacingAfter(10f);
-        document.add(titulo);
+        try {
+            InputStream logoStream = getClass().getResourceAsStream("/static/img/abarroteslogo.png");
+            if (logoStream != null) {
+                Image logo = Image.getInstance(logoStream.readAllBytes());
+                logo.setAlignment(Image.ALIGN_CENTER);
+                logo.scaleToFit(250, 250);
+                logo.setSpacingAfter(10f);
+                document.add(logo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        Paragraph titulo2 = new Paragraph("Gracias por su compra:", subtituloFont);
+        Paragraph titulo2 = new Paragraph("Gracias por su compra:", tituloFont);
         titulo2.setAlignment(Element.ALIGN_CENTER);
         titulo2.setSpacingAfter(10f);
         document.add(titulo2);
 
 
-        Paragraph p1 = new Paragraph("Cliente: " + cliente, boldFont);
+        Paragraph p1 = new Paragraph(cliente, clienteFont);
         p1.setAlignment(Element.ALIGN_CENTER);
         document.add(p1);
 
         document.add(new Paragraph(" "));
 
-        Paragraph p2 = new Paragraph("Empleado: " + empleado, boldFont);
+        Paragraph p2 = new Paragraph("Te atendió: " + empleado, boldFont);
         p2.setAlignment(Element.ALIGN_CENTER);
         document.add(p2);
 
@@ -68,15 +80,19 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         p4.setAlignment(Element.ALIGN_CENTER);
         document.add(p4);
 
-        document.add(new Paragraph(" "));
-
-        Paragraph p5 = new Paragraph("Fecha: " + fecha, boldFont);
+        Paragraph p5 = new Paragraph("Dirección: " + direccion, boldFont);
         p5.setAlignment(Element.ALIGN_CENTER);
         document.add(p5);
 
-        Paragraph p6 = new Paragraph("Hora: " + hora, boldFont);
+        document.add(new Paragraph(" "));
+
+        Paragraph p6 = new Paragraph("Fecha: " + fecha, boldFont);
         p6.setAlignment(Element.ALIGN_CENTER);
         document.add(p6);
+
+        Paragraph p7 = new Paragraph("Hora: " + hora, boldFont);
+        p7.setAlignment(Element.ALIGN_CENTER);
+        document.add(p7);
 
         PdfPTable table = new PdfPTable(5);
         table.setWidths(new float[]{2, 4, 2, 2, 2});
@@ -93,10 +109,27 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         }
 
         for (DetalleVentaDTO d : detalles) {
+            InputStream is = null;
             try {
-                InputStream is = getClass().getResourceAsStream("/static" + d.getImagen());
+                if (d.getImagen() != null) {
+                    String imagenRelativa = d.getImagen();
+
+                    // Si la imagen comienza con /img/productos/, recórtalo para evitar duplicación
+                    if (imagenRelativa.startsWith("/img/productos/")) {
+                        imagenRelativa = imagenRelativa.replaceFirst("^/img/productos/", "");
+                    }
+
+                    File file = new File(rutaBaseLocal + File.separator + imagenRelativa);
+                    if (file.exists()) {
+                        is = new FileInputStream(file);
+                    } else {
+                        // Intenta cargar desde el classpath (para imágenes dentro del proyecto)
+                        is = getClass().getResourceAsStream("/static" + d.getImagen());
+                    }
+                }
+
                 if (is == null) {
-                    is = getClass().getResourceAsStream("/static/img/default.jpg");
+                    is = getClass().getResourceAsStream("/static/img/abarrotes.png"); // imagen por defecto
                 }
 
                 if (is != null) {
@@ -107,11 +140,12 @@ public class DetalleVentaPdfView extends AbstractPdfView {
                     imgCell.setPadding(5);
                     table.addCell(imgCell);
                 } else {
-                    table.addCell(new PdfPCell(new Phrase("Sin imagen", normalFont)));
+                    table.addCell(new PdfPCell(new Phrase("Sin Imagen", normalFont)));
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
-                table.addCell(new PdfPCell(new Phrase("Error imagen", normalFont)));
+                table.addCell(new PdfPCell(new Phrase("Error Imagen", normalFont)));
             }
 
             PdfPCell nombreCell = new PdfPCell(new Phrase(d.getNombre(), normalFont));

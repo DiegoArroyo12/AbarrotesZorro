@@ -16,6 +16,9 @@
       </ul>
     </div>
 
+    <!-- Usuario Actual -->
+    <input type="hidden" name="idUsuarioActual" th:value="${idUsuarioActual}" />
+
     <!-- Nombre -->
     <div>
       <label for="nombre" class="form-label">Nombre y Apellido:</label>
@@ -69,7 +72,7 @@
     <div class="text-center">
       <button type="submit" class="button success">Guardar Empleado</button>
       <button type="button" class="button cancel"
-              th:onclick="'window.location.href=\'/empleados?idSucursal=' + ${idSucursal} + '\''">
+              th:onclick="'location.href=\'' + @{/empleados(idSucursal=${idSucursal}, idUsuario=${idUsuarioActual})} + '\''">
         Cancelar
       </button>
     </div>

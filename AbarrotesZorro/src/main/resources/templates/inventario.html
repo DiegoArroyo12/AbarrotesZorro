@@ -34,7 +34,8 @@
         <th>Imagen</th>
         <th>Cantidad</th>
         <th>Precio</th>
-        <th sec:authorize="hasAuthority('Gerente')">Acciones</th>
+        <th sec:authorize="hasAuthority('Gerente')"
+            th:if="${sucursalEmpleadoId == idSucursal}">Acciones</th>
       </tr>
       </thead>
       <tbody>
@@ -55,7 +56,8 @@
             <span th:text="${producto.precio}">Precio</span>
             <input id="precio" type="text" th:value="${producto.precio}" style="display:none;">
           </td>
-          <td sec:authorize="hasAuthority('Gerente')">
+          <td sec:authorize="hasAuthority('Gerente')"
+              th:if="${sucursalEmpleadoId == idSucursal}">
             <button id="edit" th:attr="data-id=${producto.id}" onclick="editarProducto(this)" class="btn-edit">Editar</button>
             <button id="save" th:attr="data-id=${producto.id}" onclick="guardarProducto(this)" style="display:none;" class="btn-edit">Guardar</button>
             <button id="delete" th:attr="data-id=${producto.id}" onclick="eliminarProducto(this)" class="btn-delete">Eliminar</button>
