@@ -1,7 +1,9 @@
 package mx.unam.aragon.controller.proveedor;
 
 
+import com.lowagie.text.*;
 import com.lowagie.text.Font;
+import com.lowagie.text.Image;
 import com.lowagie.text.pdf.PdfPTable;
 import jakarta.validation.Valid;
 import jakarta.mail.internet.MimeMessage;
@@ -20,8 +22,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-import com.lowagie.text.Document;
-import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -29,6 +29,7 @@ import jakarta.mail.internet.MimeMessage;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -66,6 +67,7 @@ public class ProveedorController {
 
     @GetMapping("/proveedor/pedidos")
     public String mostrarProveedor(@RequestParam("idSucursal") Integer idSucursal,
+                                   @RequestParam("nombreEmpleado") String nombreEmpleado,
                                    Model model) {
 
 
@@ -73,16 +75,20 @@ public class ProveedorController {
                 .map(SucursalEntity::getNombre)
                 .orElse("Nombre no encontrado");
 
+        String direccionSucursal = sucursalRepository.findById(Long.valueOf(idSucursal))
+                .map(SucursalEntity::getUbicacion)
+                .orElse("Dirección no encontrada");
 
         List<ProductosPedidosEntity> productosPedidos = productosPedidosRepository.findAll();
 
 
         model.addAttribute("idSucursal", idSucursal);
         model.addAttribute("nombreSucursal", nombreSucursal);
+        model.addAttribute("direccionSucursal", direccionSucursal);
         model.addAttribute("productosPedidos", productosPedidos);
         model.addAttribute("proveedores", proveedorRepository.findAll());
         model.addAttribute("productos", productoRepository.findAll());
-
+        model.addAttribute("nombreEmpleado", nombreEmpleado);
 
         return "proveedor";
     }
@@ -184,7 +190,10 @@ public class ProveedorController {
     @PostMapping("/proveedor/enviar-pedido")
     @ResponseBody
     public ResponseEntity<String> enviarPedidoPorCorreo(@RequestParam("idSucursal") Long idSucursal,
-                                                        @RequestParam("idProveedor") Long idProveedor) {
+                                                        @RequestParam("idProveedor") Long idProveedor,
+                                                        @RequestParam("nombreEmpleado") String nombreEmpleado,
+                                                        @RequestParam("nombreSucursal") String nombreSucursal,
+                                                        @RequestParam("direccionSucursal") String direccionSucursal) {
         List<ProductosPedidosEntity> productosPedidos = productosPedidosRepository.findById_IdSucursal(idSucursal);
         if (productosPedidos.isEmpty()) {
             return ResponseEntity.badRequest().body("No hay productos seleccionados para esta sucursal");
@@ -195,7 +204,7 @@ public class ProveedorController {
             return ResponseEntity.badRequest().body("Proveedor no encontrado o no tiene correo");
         }
 
-        ByteArrayOutputStream pdfStream = generarPdfDeProductosPedidos(productosPedidos, proveedor);
+        ByteArrayOutputStream pdfStream = generarPdfDeProductosPedidos(productosPedidos, proveedor, nombreEmpleado, nombreSucursal, direccionSucursal);
 
         try {
             enviarCorreoConAdjunto(
@@ -236,7 +245,7 @@ public class ProveedorController {
         table.addCell(cell);
     }
 
-    private ByteArrayOutputStream generarPdfDeProductosPedidos(List<ProductosPedidosEntity> productosPedidos, ProveedorEntity proveedor) {
+    private ByteArrayOutputStream generarPdfDeProductosPedidos(List<ProductosPedidosEntity> productosPedidos, ProveedorEntity proveedor, String nombreEmpleado, String nombreSucursal, String direccionSucursal) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
@@ -244,13 +253,31 @@ public class ProveedorController {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            Paragraph titulo = new Paragraph("Abarrotes Zorro", new Font(Font.HELVETICA, 20, Font.BOLD, new Color(204, 0, 0)));
-            titulo.setAlignment(Paragraph.ALIGN_CENTER);
-            document.add(titulo);
+            try {
+                InputStream logoStream = getClass().getResourceAsStream("/static/img/abarroteslogo.png");
+                if (logoStream != null) {
+                    com.lowagie.text.Image logo = com.lowagie.text.Image.getInstance(logoStream.readAllBytes());
+                    logo.setAlignment(Image.ALIGN_CENTER);
+                    logo.scaleToFit(250, 250);
+                    logo.setSpacingAfter(10f);
+                    document.add(logo);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-            document.add(new Paragraph("Proveedor: " + proveedor.getNombre()));
+            document.add(new Paragraph(" "));
+
+            Font tituloFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 15, Color.BLACK);
+            document.add(new Paragraph("Pedido al Proveedor: " + proveedor.getNombre(), tituloFont));
+
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph("Solicitado por: " + nombreEmpleado));
+            document.add(new Paragraph("Sucursal: " + nombreSucursal));
+            document.add(new Paragraph("Dirección: " + direccionSucursal));
             document.add(new Paragraph("Fecha: " + LocalDate.now()));
-            document.add(new Paragraph(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))));
+            document.add(new Paragraph("Hora: " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))));
             document.add(new Paragraph("\nPedido:\n", new Font(Font.HELVETICA, 14, Font.BOLD)));
             document.add(new Paragraph("\n"));
 
@@ -265,8 +292,17 @@ public class ProveedorController {
             addCellHeader(table, "Cantidad", headerFont, headerColor);
 
             for (ProductosPedidosEntity ppe : productosPedidos) {
-                table.addCell(ppe.getProducto().getNombre());
-                table.addCell(String.valueOf(ppe.getCantidad()));
+                com.lowagie.text.pdf.PdfPCell productoCell = new com.lowagie.text.pdf.PdfPCell(new Paragraph(ppe.getProducto().getNombre()));
+                productoCell.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
+                productoCell.setVerticalAlignment(com.lowagie.text.Element.ALIGN_MIDDLE);
+                productoCell.setPadding(5);
+                table.addCell(productoCell);
+
+                com.lowagie.text.pdf.PdfPCell cantidadCell = new com.lowagie.text.pdf.PdfPCell(new Paragraph(String.valueOf(ppe.getCantidad())));
+                cantidadCell.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
+                cantidadCell.setVerticalAlignment(com.lowagie.text.Element.ALIGN_MIDDLE);
+                cantidadCell.setPadding(5);
+                table.addCell(cantidadCell);
             }
 
             document.add(table);

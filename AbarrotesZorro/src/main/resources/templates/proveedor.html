@@ -162,6 +162,9 @@
     function confirmarPedido() {
         const proveedorId = document.getElementById('proveedorSelect').value;
         const idSucursal = /*[[${idSucursal}]]*/ '0';
+        const nombreEmpleado = /*[[${nombreEmpleado}]]*/ 'Empleado';
+        const nombreSucursal = /*[[${nombreSucursal}]]*/ 'Sucursal';
+        const direccionSucursal = /*[[${direccionSucursal}]]*/ 'Dirección';
 
         fetch('/proveedor/enviar-pedido', {
             method: 'POST',
@@ -170,7 +173,7 @@
                 [document.querySelector('meta[name="_csrf_header"]').getAttribute('content')]:
                     document.querySelector('meta[name="_csrf"]').getAttribute('content')
             },
-            body: `idProveedor=${proveedorId}&idSucursal=${idSucursal}`
+            body: `idProveedor=${proveedorId}&idSucursal=${idSucursal}&nombreEmpleado=${encodeURIComponent(nombreEmpleado)}&nombreSucursal=${encodeURIComponent(nombreSucursal)}&direccionSucursal=${encodeURIComponent(direccionSucursal)}`
         })
             .then(response => {
                 if (response.ok) {

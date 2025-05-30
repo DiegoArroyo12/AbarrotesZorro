@@ -74,6 +74,7 @@ public class InventarioController {
         EmpleadoEntity empleado = empleadoRepository.findByUsuario(username).orElse(null);
         if (empleado != null && empleado.getSucursal() != null) {
             model.addAttribute("sucursalEmpleadoId", empleado.getSucursal().getId());
+            model.addAttribute("nombreEmpleado", empleado.getNombre());
         } else {
             model.addAttribute("sucursalEmpleadoId", -1); // Valor por defecto si no tiene sucursal
         }
@@ -113,15 +114,32 @@ public class InventarioController {
 
             ProductoEntity productoGuardado;
             Optional<ProductoEntity> productoExistente = productoRepository.findByNombre(producto.getNombre());
-            productoGuardado = productoExistente.orElseGet(() -> productoRepository.save(producto));
 
-            InventarioEntity inventario = new InventarioEntity();
+            if (productoExistente.isPresent()) {
+                productoGuardado = productoExistente.get();
+                // Solo actualizar la imagen si se subió una nueva
+                if (producto.getImagen() != null) {
+                    productoGuardado.setImagen(producto.getImagen());
+                }
+            } else {
+                productoGuardado = productoRepository.save(producto);
+            }
+
             IdProductoSucursal idProductoSucursal = new IdProductoSucursal(productoGuardado.getId(), Long.valueOf(idSucursal));
-            inventario.setId(idProductoSucursal);
-            inventario.setProducto(productoGuardado);
-            inventario.setSucursal(sucursalRepository.findById(Long.valueOf(idSucursal)).orElse(null));
-            inventario.setStock(stock);
-            inventarioRepository.save(inventario);
+            InventarioEntity inventarioExistente = inventarioRepository.findById(idProductoSucursal).orElse(null);
+
+            if (inventarioExistente == null) {
+                InventarioEntity inventario = new InventarioEntity();
+                inventario.setId(idProductoSucursal);
+                inventario.setProducto(productoGuardado);
+                inventario.setSucursal(sucursalRepository.findById(Long.valueOf(idSucursal)).orElse(null));
+                inventario.setStock(stock);
+                inventarioRepository.save(inventario);
+            } else {
+                // Solo actualiza el stock si quieres permitirlo
+                inventarioExistente.setStock(stock);
+                inventarioRepository.save(inventarioExistente);
+            }
 
             List<SucursalEntity> otrasSucursales = sucursalRepository.findAll()
                     .stream()
@@ -129,13 +147,16 @@ public class InventarioController {
                     .toList();
 
             for (SucursalEntity sucursal : otrasSucursales) {
-                InventarioEntity inventarioAdicional = new InventarioEntity();
                 IdProductoSucursal idAdicional = new IdProductoSucursal(productoGuardado.getId(), sucursal.getId());
-                inventarioAdicional.setId(idAdicional);
-                inventarioAdicional.setProducto(productoGuardado);
-                inventarioAdicional.setSucursal(sucursal);
-                inventarioAdicional.setStock(0);
-                inventarioRepository.save(inventarioAdicional);
+
+                if (!inventarioRepository.existsById(idAdicional)) {
+                    InventarioEntity inventarioAdicional = new InventarioEntity();
+                    inventarioAdicional.setId(idAdicional);
+                    inventarioAdicional.setProducto(productoGuardado);
+                    inventarioAdicional.setSucursal(sucursal);
+                    inventarioAdicional.setStock(0);
+                    inventarioRepository.save(inventarioAdicional);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

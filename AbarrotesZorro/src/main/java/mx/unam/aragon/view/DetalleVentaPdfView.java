@@ -94,6 +94,8 @@ public class DetalleVentaPdfView extends AbstractPdfView {
         p7.setAlignment(Element.ALIGN_CENTER);
         document.add(p7);
 
+        document.add(new Paragraph(" "));
+
         PdfPTable table = new PdfPTable(5);
         table.setWidths(new float[]{2, 4, 2, 2, 2});
         table.setWidthPercentage(100);
